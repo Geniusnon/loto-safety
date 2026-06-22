@@ -16,7 +16,6 @@
         .comic-shadow { box-shadow: 6px 6px 0px 0px #000000; }
         .btn-active:active { transform: translate(4px, 4px); box-shadow: 2px 2px 0px 0px #000000; }
         
-        /* Kahoot Style Colors */
         .color-a { background-color: #e21b3c; color: white; }
         .color-b { background-color: #1368ce; color: white; }
         .color-c { background-color: #d89e00; color: white; }
@@ -55,8 +54,7 @@
                     <p class="text-2xl font-black text-black">GAME PIN:</p>
                     <h1 id="host-pin-display" class="text-6xl md:text-8xl font-black text-purple-700 tracking-widest my-2">------</h1>
                 </div>
-                <div id="host-qrcode-container" class="bg-white p-3 border-4 border-black min-w-[160px] min-h-[160px] flex items-center justify-center">
-                    </div>
+                <div id="host-qrcode-container" class="bg-white p-3 border-4 border-black min-w-[160px] min-h-[160px] flex items-center justify-center"></div>
             </div>
 
             <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
@@ -65,7 +63,8 @@
             </div>
 
             <div id="host-players-grid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3 text-center font-bold text-lg">
-                </div>
+                <div class="col-span-full text-slate-500 mt-4">รอผู้เข้าอบรมสแกนเข้าห้อง...</div>
+            </div>
         </div>
 
         <div id="view-host-game" class="hidden flex-1 flex flex-col">
@@ -188,7 +187,6 @@
             alert("Firebase Error: ไม่สามารถเชื่อมต่อฐานข้อมูลได้");
         }
 
-        // ตัดข้อ 5 และ 6 ออก เหลือ 5 ข้อเน้นๆ
         const questionsList = [
             { q: "ข้อใด ไม่ใช่ ขั้นตอน LOTO ที่ถูกต้อง?", o: ["ควบคุมพลังงานสะสม", "ตรวจสอบว่าปลอดภัยหรือไม่", "ปิดเครื่องจักรหรืออุปกรณ์", "แขวนป้ายเตือนโดยไม่ล็อกจุดตัดแยก"], ans: 3 },
             { q: "งานที่ทำ LOTO ไม่ครบถ้วน ข้อใด ไม่ใช่ สิ่งที่ควรทำ?", o: ["จัดให้มีผู้ควบคุมงาน", "ป้องกันพลังงานบางส่วนเท่าที่ทำได้", "สื่อสารให้ชัดเจนก่อนเริ่มงาน", "ให้หัวหน้าอนุมัติลุยก่อน แล้วค่อยแจ้ง จป."], ans: 3 },
@@ -359,10 +357,16 @@
                 
                 const ref = db.ref(`rooms/${currentRoom}/players`).push();
                 playerKey = ref.key;
-                ref.set({ name: name, empId: id, score: 0, answered: -1 });
                 
-                changeView('player-waiting');
-                listenToGame();
+                // 🔥 เพิ่ม .catch() ดัก Error ป้องกันคนหลงคิดว่าเข้าห้องได้ แต่ Database ไม่บันทึก
+                ref.set({ name: name, empId: id, score: 0, answered: -1 })
+                    .then(() => {
+                        changeView('player-waiting');
+                        listenToGame();
+                    })
+                    .catch((error) => {
+                        alert("⚠️ เซิร์ฟเวอร์ปฏิเสธการเข้าห้อง!\nกรุณาตรวจสอบว่าเปิด Rules ใน Firebase เป็น true แล้วหรือยัง\n\n(Error: " + error.message + ")");
+                    });
             });
         }
 
@@ -379,7 +383,6 @@
                         localHasAnswered = false; 
                         
                         const q = questionsList[currentQIdx];
-                        // อัปเดตข้อความจำนวนข้อให้ตรงกับความยาว Array จริง
                         document.getElementById('player-q-number').innerText = `ข้อที่ ${currentQIdx + 1} จาก ${questionsList.length}`;
                         document.getElementById('player-question-text').innerText = q.q;
                         document.getElementById('player-opt-0').innerText = q.o[0];
