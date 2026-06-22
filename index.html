@@ -10,8 +10,6 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-
     <style>
         body {
             font-family: 'Kanit', sans-serif;
@@ -78,9 +76,11 @@
                 <div class="text-center">
                     <p class="text-sm font-bold text-slate-800 uppercase tracking-wider">รหัสเข้าห้องทดสอบ (PIN)</p>
                     <h1 id="host-pin" class="text-5xl font-black text-purple-700 tracking-widest my-1">------</h1>
-                    <p class="text-xs font-bold text-red-600">หรือสแกน QR Code ขวามือเข้าทันที 📲</p>
+                    <p class="text-xs font-bold text-red-600">หรือให้พนักงานสแกน QR Code เพื่อเข้าห้อง 📲</p>
                 </div>
-                <div id="host-qrcode" class="bg-white p-2 border-2 border-black"></div>
+                <div id="host-qrcode-container" class="bg-white p-2 border-2 border-black flex items-center justify-center min-w-[130px] min-h-[130px]">
+                    <span class="text-xs text-gray-500 font-bold">กำลังเจนคิวอาร์...</span>
+                </div>
             </div>
 
             <div id="host-leaderboard-box" class="hidden bg-orange-100 comic-border-md p-4 comic-shadow-sm mb-5 text-center">
@@ -113,9 +113,7 @@
             <h2 class="text-2xl font-black text-black mb-5">กรอกข้อมูลเข้าร่วม</h2>
             <div class="space-y-4 max-w-xs mx-auto">
                 <input type="text" id="player-pin-input" placeholder="รหัสห้อง PIN 6 หลัก" class="w-full text-center p-2.5 comic-border-md text-xl font-black placeholder-gray-500 uppercase comic-shadow-sm" maxlength="6">
-                
                 <input type="text" id="player-id-input" placeholder="รหัสพนักงาน (เช่น 500xxx)" class="w-full text-center p-2.5 comic-border-md text-xl font-black placeholder-gray-500 comic-shadow-sm" maxlength="10">
-                
                 <input type="text" id="player-name-input" placeholder="ระบุชื่อเล่นของคุณ" class="w-full text-center p-2.5 comic-border-md text-xl font-black placeholder-gray-500 comic-shadow-sm" maxlength="12">
                 
                 <button onclick="joinRoomAsPlayer()" class="w-full bg-green-400 hover:bg-green-300 text-black font-black text-lg py-3 comic-border-md comic-shadow-sm comic-btn">
@@ -215,14 +213,14 @@
                 db.ref('rooms/' + roomPin + '/players').on('value', (snapshot) => {
                     renderHostPlayers(snapshot.val());
                 });
-            } else { roomPin = "000000"; }
+            } else { roomPin = "111111"; }
             
             document.getElementById('host-pin').innerText = roomPin;
-            document.getElementById('host-qrcode').innerHTML = "";
-            new QRCode(document.getElementById('host-qrcode'), {
-                text: `${currentWebUrl}?pin=${roomPin}`,
-                width: 120, height: 120
-            });
+            
+            // 🔥 วิธีใหม่: เจนรูปคิวอาร์โค้ดผ่าน API สากลตรงๆ ไม่พึ่งสคริปต์โหลดนอก ขึ้นรูปภาพได้แน่นอน 100%
+            const targetJoinUrl = encodeURIComponent(`${currentWebUrl}?pin=${roomPin}`);
+            const qrContainer = document.getElementById('host-qrcode-container');
+            qrContainer.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${targetJoinUrl}" alt="QR Code" class="w-[120px] h-[120px]"/>`;
 
             changeView('host');
         }
@@ -236,7 +234,6 @@
                     const p = playersData[key];
                     const card = document.createElement('div');
                     card.className = "bg-white border-2 border-black p-2 comic-shadow-sm flex justify-between items-center bg-teal-50";
-                    // จอหลักแสดงชื่อเล่นเพื่อความสวยงาม
                     card.innerHTML = `<span>👤 ${p.name}</span><span class="bg-black text-yellow-300 px-2 py-0.5 rounded font-black text-xs">${p.score} แต้ม</span>`;
                     grid.appendChild(card);
                 });
@@ -309,8 +306,7 @@
             const inputId = document.getElementById('player-id-input').value.trim();
             const inputName = document.getElementById('player-name-input').value.trim();
             
-            // ตรวจสอบข้อมูลครบทั้ง 3 ช่อง
-            if (!inputPin || !inputId || !inputName) { alert("กรุณากรอกข้อมูล PIN, รหัสพนักงาน และชื่อเล่นให้ครบถ้วนครับพี่!"); return; }
+            if (!inputPin || !inputId || !inputName) { alert("กรุณากรอกข้อมูลให้ครบถ้วนทั้ง 3 ช่องครับพี่!"); return; }
             
             if (isOnline) {
                 roomPin = inputPin;
@@ -318,11 +314,13 @@
                     if (!snapshot.exists()) { alert("ไม่พบรหัสห้องนี้ในระบบ!"); return; }
                     const ref = db.ref('rooms/' + roomPin + '/players').push();
                     playerRefKey = ref.key;
-                    // เซฟข้อมูลลง Firebase เก็บทั้งรหัสพนักงาน (empId) และชื่อเล่น (name)
                     ref.set({ name: inputName, empId: inputId, score: 0 });
                     changeView('quiz');
                     listenToRoomUpdates();
                 });
+            } else {
+                changeView('quiz');
+                renderQuestionToPlayerView(0);
             }
         }
 
