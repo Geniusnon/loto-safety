@@ -10,6 +10,8 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
     <style>
         body {
             font-family: 'Kanit', sans-serif;
@@ -43,18 +45,10 @@
                 <button onclick="changeView('role')" class="w-full bg-white hover:bg-orange-50 p-5 comic-border-md comic-shadow-sm comic-btn flex justify-between items-center group transition-all">
                     <div>
                         <h3 class="text-xl font-black text-black">Lock out tag out (LOTO)</h3>
-                        <p class="text-sm text-slate-800 font-medium mt-1">ควิซทดสอบจิตสำนึกและมาตรฐานการตัดแยกพลังงานอันตราย 7 ข้อ</p>
+                        <p class="text-sm text-slate-800 font-medium mt-1">ควิซจับเวลาสไตล์ Kahoot ชิงความเร็ว 7 ข้อ</p>
                     </div>
                     <span class="text-2xl group-hover:translate-x-1 transition-transform">🔒</span>
                 </button>
-
-                <div class="w-full bg-gray-300 p-5 comic-border-md border-dashed opacity-60 flex justify-between items-center select-none">
-                    <div>
-                        <h3 class="text-xl font-black text-gray-500">Working at Height (เร็วๆ นี้)</h3>
-                        <p class="text-sm text-gray-500 font-medium mt-1">ระบบความปลอดภัยสำหรับการทำงานบนที่สูง</p>
-                    </div>
-                    <span class="text-2xl">🚧</span>
-                </div>
             </div>
         </div>
 
@@ -80,19 +74,29 @@
         </div>
 
         <div id="view-host" class="hidden py-2">
-            <div class="bg-purple-100 comic-border-md p-4 text-center comic-shadow-sm mb-5">
-                <p class="text-sm font-bold text-slate-800 uppercase tracking-wider">รหัสเข้าห้องทดสอบ (PIN)</p>
-                <h1 id="host-pin" class="text-5xl font-black text-purple-700 tracking-widest my-1">------</h1>
-                <p class="text-xs font-bold text-red-600">📢 แจ้งให้พนักงานนำรหัส 6 หลักนี้ไปกรอกเพื่อเข้าห้อง</p>
+            <div class="bg-purple-100 comic-border-md p-4 flex flex-col md:flex-row items-center justify-around comic-shadow-sm mb-5 gap-4">
+                <div class="text-center">
+                    <p class="text-sm font-bold text-slate-800 uppercase tracking-wider">รหัสเข้าห้องทดสอบ (PIN)</p>
+                    <h1 id="host-pin" class="text-5xl font-black text-purple-700 tracking-widest my-1">------</h1>
+                    <p class="text-xs font-bold text-red-600">หรือสแกน QR Code ขวามือเข้าทันที 📲</p>
+                </div>
+                <div id="host-qrcode" class="bg-white p-2 border-2 border-black"></div>
+            </div>
+
+            <div id="host-leaderboard-box" class="hidden bg-orange-100 comic-border-md p-4 comic-shadow-sm mb-5 text-center">
+                <h2 class="text-2xl font-black text-orange-600 mb-3">🏆 ตารางผู้นำ 3 อันดับแรก 🏆</h2>
+                <div id="leaderboard-list" class="space-y-2 max-w-md mx-auto"></div>
             </div>
 
             <div class="bg-white comic-border-md p-4 comic-shadow-sm mb-5">
                 <div class="flex justify-between items-center border-b-2 border-black pb-2 mb-3">
-                    <h3 class="font-black text-black text-lg">พนักงานที่เข้าห้องแล้ว (<span id="count-players">0</span> คน)</h3>
-                    <span id="host-status-badge" class="bg-blue-500 text-white text-xs font-black px-2.5 py-0.5 comic-border-md">รอดำเนินการ</span>
-                </div>
-                <div id="host-player-grid" class="grid grid-cols-2 md:grid-cols-3 gap-3 max-h-44 overflow-y-auto p-1 text-sm font-medium text-slate-800">
+                    <h3 class="font-black text-black text-lg">พนักงานในห้อง (<span id="count-players">0</span> คน)</h3>
+                    <div class="flex items-center space-x-2">
+                        <span id="host-timer-display" class="hidden bg-red-600 text-white px-3 py-0.5 rounded font-black text-sm animate-pulse">เวลา: 15s</span>
+                        <span id="host-status-badge" class="bg-blue-500 text-white text-xs font-black px-2.5 py-0.5 comic-border-md">รอดำเนินการ</span>
                     </div>
+                </div>
+                <div id="host-player-grid" class="grid grid-cols-2 md:grid-cols-3 gap-3 max-h-36 overflow-y-auto p-1 text-sm font-medium text-slate-800"></div>
             </div>
 
             <div class="flex space-x-3">
@@ -109,7 +113,11 @@
             <h2 class="text-2xl font-black text-black mb-5">กรอกข้อมูลเข้าร่วม</h2>
             <div class="space-y-4 max-w-xs mx-auto">
                 <input type="text" id="player-pin-input" placeholder="รหัสห้อง PIN 6 หลัก" class="w-full text-center p-2.5 comic-border-md text-xl font-black placeholder-gray-500 uppercase comic-shadow-sm" maxlength="6">
+                
+                <input type="text" id="player-id-input" placeholder="รหัสพนักงาน (เช่น 500xxx)" class="w-full text-center p-2.5 comic-border-md text-xl font-black placeholder-gray-500 comic-shadow-sm" maxlength="10">
+                
                 <input type="text" id="player-name-input" placeholder="ระบุชื่อเล่นของคุณ" class="w-full text-center p-2.5 comic-border-md text-xl font-black placeholder-gray-500 comic-shadow-sm" maxlength="12">
+                
                 <button onclick="joinRoomAsPlayer()" class="w-full bg-green-400 hover:bg-green-300 text-black font-black text-lg py-3 comic-border-md comic-shadow-sm comic-btn">
                     เข้าห้องทดสอบ 🏃‍♂️💨
                 </button>
@@ -118,9 +126,10 @@
         </div>
 
         <div id="view-quiz" class="hidden">
-            <div class="w-full bg-white comic-border-md h-7 mb-5 relative">
-                <div id="quiz-progress" class="bg-cyan-400 h-full border-r-2 border-black transition-all duration-300" style="width: 0%"></div>
-                <div id="quiz-status-text" class="absolute inset-0 flex items-center justify-center text-xs font-black text-black">กำลังโหลด...</div>
+            <div class="w-full bg-white comic-border-md h-7 mb-5 relative flex items-center justify-between px-3">
+                <div id="quiz-progress" class="absolute left-0 top-0 bg-cyan-400 h-full border-r-2 border-black transition-all duration-300" style="width: 0%; z-index: 1;"></div>
+                <span id="quiz-status-text" class="text-xs font-black text-black relative z-10">ข้อที่ 1 จาก 7 ข้อ</span>
+                <span id="player-timer" class="text-sm font-black text-red-600 bg-white px-2 border border-black rounded relative z-10">⏱️ 15s</span>
             </div>
 
             <div class="bg-white comic-border-md p-4 mb-5 comic-shadow-sm relative">
@@ -130,13 +139,12 @@
                 <p id="quiz-q-text" class="text-xl md:text-2xl font-black text-black pt-2 leading-relaxed"></p>
             </div>
 
-            <div id="quiz-options-box" class="space-y-3.5">
-                </div>
+            <div id="quiz-options-box" class="space-y-3.5"></div>
 
             <div id="quiz-wait-overlay" class="hidden text-center py-8 bg-white comic-border-md comic-shadow-sm">
                 <div class="text-4xl animate-bounce mb-2">🔒</div>
-                <p class="text-xl font-black text-red-600">บันทึกคำตอบเรียบร้อย!</p>
-                <p class="text-sm font-bold text-gray-700 mt-1">กรุณารอวิทยากรเปิดโจทย์ข้อต่อไปบนจอหลัก...</p>
+                <p class="text-xl font-black text-red-600">ส่งคำตอบเรียบร้อย!</p>
+                <p class="text-sm font-bold text-gray-700 mt-1">ยิงเร็วได้แต้มเยอะ! รอวิทยากรโชว์คะแนน Top 3 บนจอใหญ่นะครับ...</p>
             </div>
         </div>
 
@@ -144,9 +152,9 @@
             <h1 class="text-3xl font-black text-black mb-5 bg-red-500 inline-block px-5 py-1.5 comic-border-md comic-shadow-sm">
                 สิ้นสุดการทดสอบ!
             </h1>
-            <p class="text-lg font-bold text-black my-1">คะแนนรวมสุทธิของคุณคือ</p>
+            <p class="text-lg font-bold text-black my-1">คะแนนสะสมรวมความเร็วของคุณคือ</p>
             <div class="bg-white comic-border-md inline-block px-10 py-4 rounded-full text-5xl font-black text-purple-600 comic-shadow-sm my-3">
-                <span id="player-final-score">0</span>/7 ข้อ
+                <span id="player-final-score">0</span> คะแนน
             </div>
             <p class="text-sm font-bold text-gray-800 px-4 mb-5">ขอบคุณที่ร่วมรักษามาตราฐาน LOTO และระบบความปลอดภัยในพื้นที่ท่าเรือครับ!</p>
             <button onclick="location.reload()" class="bg-cyan-400 hover:bg-cyan-300 text-black font-black text-md py-3 px-8 comic-border-md comic-shadow-sm comic-btn">
@@ -157,7 +165,6 @@
     </div>
 
     <script>
-        // ใส่รหัสจริงของโปรเจกต์พี่เรียบร้อยแล้วครับ 
         const firebaseConfig = {
             apiKey: "AIzaSyA-BNjTFR15PBWThOFyB10UcQR50jUvkTM",
             authDomain: "lcb1-loto-game.firebaseapp.com",
@@ -169,65 +176,29 @@
             measurementId: "G-TPMQYV9465"
         };
 
-        let isOnline = false;
-        let db = null;
-
-        // ดักจับสัญญาณเชื่อมต่ออัตโนมัติ
+        let isOnline = false; let db = null;
         try {
             if (firebaseConfig.apiKey) {
-                firebase.initializeApp(firebaseConfig);
-                db = firebase.database();
-                isOnline = true;
-                document.getElementById('network-status').innerText = "🔴 ระบบออนไลน์ Real-time Database เชื่อมต่อสำเร็จ";
+                firebase.initializeApp(firebaseConfig); db = firebase.database(); isOnline = true;
+                document.getElementById('network-status').innerText = "🔴 ระบบออนไลน์ Kahoot Mode เชื่อมต่อสำเร็จ";
                 document.getElementById('network-status').className = "text-xs text-green-300 font-bold tracking-normal block mt-1";
             }
-        } catch (e) {
-            document.getElementById('network-status').innerText = "โหมดทดสอบภายใน (Offline Mode)";
-        }
+        } catch (e) { document.getElementById('network-status').innerText = "โหมดทดสอบภายใน (Offline Mode)"; }
 
         const questionsList = [
-            {
-                q: "ข้อใด ไม่ใช่ ขั้นตอน LOTO ที่ถูกต้อง?",
-                o: ["ควบคุมพลังงานสะสม", "ตรวจสอบว่าปลอดภัยหรือไม่", "ปิดเครื่องจักรหรืออุปกรณ์", "แขวนป้ายเตือนไว้หน้าห้องควบคุมโดยไม่ล็อกจุดตัดแยก"],
-                ans: 3
-            },
-            {
-                q: "งานท่าเรือที่ทำ LOTO ได้ไม่ครบถ้วน (เช่น ต้องเปิดเครื่องทดสอบ) ข้อใด ไม่ใช่ สิ่งที่ควรทำ?",
-                o: ["จัดให้มีผู้ควบคุมงาน ทำหน้าที่สั่งเริ่ม-หยุด และมอบหมายบทบาทให้แต่ละคนชัดเจน", "ป้องกันพลังงานบางส่วนเท่าที่ทำได้ เช่น ใส่ยางกันล้อไหล หรือลดแรงดันลม", "สื่อสารให้ชัดเจนก่อนเริ่มงาน ว่าใครอยู่ตำแหน่งไหน ใช้สัญญาณอะไร", "ให้หัวหน้างานอนุมัติลุยหน้างานไปก่อน แล้วค่อยแจ้ง จป. ทราบหลังซ่อมเสร็จ"],
-                ans: 3
-            },
-            {
-                q: "ขั้นตอนเตรียมความพร้อม ข้อใด ไม่ใช่ สิ่งที่พนักงานต้องรู้เกี่ยวกับแหล่งพลังงาน?",
-                o: ["แหล่งพลังงานนั้นเป็นแหล่งพลังงานชนิดใด?", "อันตรายจากแหล่งพลังงานที่จะต้องถูกควบคุมมีอะไรบ้าง?", "จะต้องควบคุมอันตรายนั้นอย่างไร?", "แหล่งพลังงานนั้นถูกเปิดใช้งานมาแล้วกี่ชั่วโมง?"],
-                ans: 3
-            },
-            {
-                q: "อุปกรณ์หลักที่ต้องใช้ควบคู่กันเสมอในทุกประเภทงานของระบบ LOTO คือข้อใด?",
-                o: ["แม่กุญแจความปลอดภัย และ อุปกรณ์กั้นเขตอันตราย", "ป้ายเตือนอันตราย และ ใบอนุญาตทำงาน", "แม่กุญแจ และ ป้ายเตือนอันตราย", "สวิตช์ปิดฉุกเฉิน และ ป้ายเตือนอันตราย"],
-                ans: 2
-            },
-            {
-                q: "ข้อใด ไม่ใช่ มาตรฐานข้อกำหนดของอุปกรณ์ LOTO?",
-                o: ["ต้องแข็งแรงพอที่จะป้องกันการหลุดออกโดยไม่ตั้งใจ", "ป้ายที่ทนทานต่อสภาพอากาศที่อาจเปียกชื้น", "มีข้อความประกอบบนป้าย เช่น ห้ามเปิด ห้ามปิด เป็นต้น", "ป้ายเตือนต้องใช้วัสดุสะท้อนแสงไฟระดับเดียวกับป้ายจราจรในท่าเรือ"],
-                ans: 3
-            },
-            {
-                q: "ตามมาตรฐาน LOTO ข้อใด ไม่ใช่ อุปกรณ์ตัดแยกพลังงานที่อนุญาตให้ใช้ล็อก?",
-                o: ["วาล์วสลักหรือวาล์วพวงมาลัยท่อส่ง", "เซอร์กิตเบรกเกอร์", "สวิตช์สับตอนหลัก", "รีโมทคอนโทรลหน้าเครื่องจักร"],
-                ans: 3
-            },
-            {
-                q: "งานด่วนใต้เครนขัดข้อง หัวหน้าสั่งให้มุดไปเคลียร์ 'แค่ 1 นาที' ไม่ต้องทำ LOTO เพราะเรือรีบออก คุณจะทำอย่างไร?",
-                o: ["รีบเข้าไปเคลียร์ให้เสร็จไวๆ แล้วใช้วิทยุสื่อสารคอยเช็กกับห้องคอนโทรลไว้", "วิ่งเข้าไปทำทันทีโดยพกแม่กุญแจติดตัวไปด้วย เผื่อมีคนเปิดระบบจะได้ตะโกนบอก", "ปฏิเสธทันที และยืนยันต้องทำ LOTO ให้เสร็จ เพราะไม่มีเรือลำไหนสำคัญกว่าชีวิตคน", "ยอมเข้าไปเคลียร์ให้ แต่ต้องใส่หมวกเซฟตี้และสายรัดตัวให้แน่นหนากว่าเดิม"],
-                ans: 2
-            }
+            { q: "ข้อใด ไม่ใช่ ขั้นตอน LOTO ที่ถูกต้อง?", o: ["ควบคุมพลังงานสะสม", "ตรวจสอบว่าปลอดภัยหรือไม่", "ปิดเครื่องจักรหรืออุปกรณ์", "แขวนป้ายเตือนไว้หน้าห้องควบคุมโดยไม่ล็อกจุดตัดแยก"], ans: 3 },
+            { q: "งานท่าเรือที่ทำ LOTO ได้ไม่ครบถ้วน (เช่น ต้องเปิดเครื่องทดสอบ) ข้อใด ไม่ใช่ สิ่งที่ควรทำ?", o: ["จัดให้มีผู้ควบคุมงาน ทำหน้าที่สั่งเริ่ม-หยุด และมอบหมายบทบาทให้แต่ละคนชัดเจน", "ป้องกันพลังงานบางส่วนเท่าที่ทำได้ เช่น ใส่ยางกันล้อไหล หรือลดแรงดันลม", "สื่อสารให้ชัดเจนก่อนเริ่มงาน ว่าใครอยู่ตำแหน่งไหน ใช้สัญญาณอะไร", "ให้หัวหน้างานอนุมัติลุยหน้างานไปก่อน แล้วค่อยแจ้ง จป. ทราบหลังซ่อมเสร็จ"], ans: 3 },
+            { q: "ขั้นตอนเตรียมความพร้อม ข้อใด ไม่ใช่ สิ่งที่พนักงานต้องรู้เกี่ยวกับแหล่งพลังงาน?", o: ["แหล่งพลังงานนั้นเป็นแหล่งพลังงานชนิดใด?", "อันตรายจากแหล่งพลังงานที่จะต้องถูกควบคุมมีอะไรบ้าง?", "จะต้องควบคุมอันตรายนั้นอย่างไร?", "แหล่งพลังงานนั้นถูกเปิดใช้งานมาแล้วกี่ชั่วโมง?"], ans: 3 },
+            { q: "อุปกรณ์หลักที่ต้องใช้ควบคู่กันเสมอในทุกประเภทงานของระบบ LOTO คือข้อใด?", o: ["แม่กุญแจความปลอดภัย และ อุปกรณ์กั้นเขตอันตราย", "ป้ายเตือนอันตราย และ ใบอนุญาตทำงาน", "แม่กุญแจ และ ป้ายเตือนอันตราย", "สวิตช์ปิดฉุกเฉิน และ ป้ายเตือนอันตราย"], ans: 2 },
+            { q: "ข้อใด ไม่ใช่ มาตรฐานข้อกำหนดของอุปกรณ์ LOTO?", o: ["ต้องแข็งแรงพอที่จะป้องกันการหลุดออกโดยไม่ตั้งใจ", "ป้ายที่ทนทานต่อสภาพอากาศที่อาจเปียกชื้น", "มีข้อความประกอบบนป้าย เช่น ห้ามเปิด ห้ามปิด เป็นต้น", "ป้ายเตือนต้องใช้วัสดุสะท้อนแสงไฟระดับเดียวกับป้ายจราจรในท่าเรือ"], ans: 3 },
+            { q: "ตามมาตรฐาน LOTO ข้อใด ไม่ใช่ อุปกรณ์ตัดแยกพลังงานที่อนุญาตให้ใช้ล็อก?", o: ["วาล์วสลักหรือวาล์วพวงมาลัยท่อส่ง", "เซอร์กิตเบรกเกอร์", "สวิตช์สับตอนหลัก", "รีโมทคอนโทรลหน้าเครื่องจักร"], ans: 3 },
+            { q: "งานด่วนใต้เครนขัดข้อง หัวหน้าสั่งให้มุดไปเคลียร์ 'แค่ 1 นาที' ไม่ต้องทำ LOTO เพราะเรือรีบออก คุณจะทำอย่างไร?", o: ["รีบเข้าไปเคลียร์ให้เสร็จไวๆ แล้วใช้วิทยุสื่อสารคอยเช็กกับห้องคอนโทรลไว้", "วิ่งเข้าไปทำทันทีโดยพกแม่กุญแจติดตัวไปด้วย เผื่อมีคนเปิดระบบจะได้ตะโกนบอก", "ปฏิเสธทันที และยืนยันต้องทำ LOTO ให้เสร็จ เพราะไม่มีเรือลำไหนสำคัญกว่าชีวิตคน", "ยอมเข้าไปเคลียร์ให้ แต่ต้องใส่หมวกเซฟตี้และสายรัดตัวให้แน่นหนากว่าเดิม"], ans: 2 }
         ];
 
-        let roomPin = "123456";
-        let playerRefKey = null;
-        let currentQuestionGlobalIdx = -1;
-        let localPlayerScore = 0;
-        let offlineMockPlayers = [{name: "สมศักดิ์ ช่างซ่อมเครน", score: 0}, {name: "วิชัย ฝ่ายคลังสินค้า", score: 0}];
+        let roomPin = "123456"; let playerRefKey = null; let currentQuestionGlobalIdx = -1;
+        let localPlayerScore = 0; let secondsLeft = 15; let timerInterval = null;
+
+        const currentWebUrl = window.location.href.split('?')[0];
 
         function changeView(viewId) {
             ['menu', 'role', 'host', 'join-form', 'quiz', 'finish'].forEach(id => {
@@ -236,115 +207,137 @@
             document.getElementById(`view-${viewId}`).classList.remove('hidden');
         }
 
+        // 👨‍🏫 HOST ENGINE
         function setupHostMode() {
             if (isOnline) {
                 roomPin = Math.floor(100000 + Math.random() * 900000).toString();
-                db.ref('rooms/' + roomPin).set({ status: 'waiting', currentQuestion: -1 });
+                db.ref('rooms/' + roomPin).set({ status: 'waiting', currentQuestion: -1, timer: 15 });
                 db.ref('rooms/' + roomPin + '/players').on('value', (snapshot) => {
                     renderHostPlayers(snapshot.val());
                 });
-            } else {
-                roomPin = "000000";
-                setTimeout(() => { renderHostPlayersOffline(); }, 200);
-            }
+            } else { roomPin = "000000"; }
+            
             document.getElementById('host-pin').innerText = roomPin;
+            document.getElementById('host-qrcode').innerHTML = "";
+            new QRCode(document.getElementById('host-qrcode'), {
+                text: `${currentWebUrl}?pin=${roomPin}`,
+                width: 120, height: 120
+            });
+
             changeView('host');
         }
 
         function renderHostPlayers(playersData) {
-            const grid = document.getElementById('host-player-grid');
-            grid.innerHTML = '';
+            const grid = document.getElementById('host-player-grid'); grid.innerHTML = '';
             if (playersData) {
                 const keys = Object.keys(playersData);
                 document.getElementById('count-players').innerText = keys.length;
                 keys.forEach(key => {
                     const p = playersData[key];
-                    grid.appendChild(createPlayerBadge(p.name, p.score));
+                    const card = document.createElement('div');
+                    card.className = "bg-white border-2 border-black p-2 comic-shadow-sm flex justify-between items-center bg-teal-50";
+                    // จอหลักแสดงชื่อเล่นเพื่อความสวยงาม
+                    card.innerHTML = `<span>👤 ${p.name}</span><span class="bg-black text-yellow-300 px-2 py-0.5 rounded font-black text-xs">${p.score} แต้ม</span>`;
+                    grid.appendChild(card);
                 });
-            } else {
-                grid.innerHTML = '<p class="text-center font-bold text-gray-400 col-span-full py-4">⏳ กำลังรอพนักงานกดเชื่อมเข้าร่วมห้อง...</p>';
-            }
+                calculateLeaderboard(playersData);
+            } else { grid.innerHTML = '<p class="text-center font-bold text-gray-400 col-span-full py-4">⏳ กำลังรอพนักงานสแกน QR Code เข้าห้อง...</p>'; }
         }
 
-        function renderHostPlayersOffline() {
-            const grid = document.getElementById('host-player-grid');
-            grid.innerHTML = '';
-            document.getElementById('count-players').innerText = offlineMockPlayers.length;
-            offlineMockPlayers.forEach(p => {
-                grid.appendChild(createPlayerBadge(p.name, p.score));
+        function calculateLeaderboard(playersData) {
+            const list = Object.values(playersData).sort((a, b) => b.score - a.score).slice(0, 3);
+            const container = document.getElementById('leaderboard-list'); container.innerHTML = '';
+            const medals = ['🥇', '🥈', '🥉'];
+            list.forEach((p, idx) => {
+                const div = document.createElement('div');
+                div.className = "bg-white border-2 border-black p-2 flex justify-between font-black text-lg text-slate-900 rounded";
+                div.innerHTML = `<span>${medals[idx]} อันดับที่ ${idx+1}: ${p.name}</span><span class="text-purple-700">${p.score} แต้ม</span>`;
+                container.appendChild(div);
             });
         }
 
-        function createPlayerBadge(name, score) {
-            const card = document.createElement('div');
-            card.className = "bg-white border-2 border-black p-2 comic-shadow-sm flex justify-between items-center bg-teal-50";
-            card.innerHTML = `<span>👤 ${name}</span><span class="bg-black text-yellow-300 px-2 py-0.5 rounded font-black text-xs">${score} แต้ม</span>`;
-            return card;
+        function startHostTimer() {
+            secondsLeft = 15;
+            document.getElementById('host-timer-display').classList.remove('hidden');
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                secondsLeft--;
+                if(isOnline) db.ref('rooms/' + roomPin).update({ timer: secondsLeft });
+                document.getElementById('host-timer-display').innerText = `เวลา: ${secondsLeft}s`;
+                if(secondsLeft <= 0) {
+                    clearInterval(timerInterval);
+                    document.getElementById('host-leaderboard-box').classList.remove('hidden');
+                }
+            }, 1000);
         }
 
         function hostControlGame(action) {
             if (action === 'start') {
                 document.getElementById('btn-start-game').classList.add('hidden');
                 document.getElementById('btn-next-question').classList.remove('hidden');
-                document.getElementById('host-status-badge').innerText = "กำลังทดสอบ";
-                
-                if (isOnline) {
-                    db.ref('rooms/' + roomPin).update({ status: 'playing', currentQuestion: 0 });
-                } else {
-                    currentQuestionGlobalIdx = 0;
-                    renderQuestionToPlayerView(0);
-                    changeView('quiz');
-                }
+                document.getElementById('host-status-badge').innerText = "ข้อที่ 1";
+                startHostTimer();
+                if (isOnline) db.ref('rooms/' + roomPin).update({ status: 'playing', currentQuestion: 0 });
             } else if (action === 'next') {
-                if (isOnline) {
-                    db.ref('rooms/' + roomPin + '/currentQuestion').once('value', (snapshot) => {
-                        let nextIdx = snapshot.val() + 1;
-                        if (nextIdx < questionsList.length) {
-                            db.ref('rooms/' + roomPin).update({ currentQuestion: nextIdx });
-                        } else {
-                            db.ref('rooms/' + roomPin).update({ status: 'finished' });
-                        }
-                    });
-                } else {
-                    currentQuestionGlobalIdx++;
-                    if (currentQuestionGlobalIdx < questionsList.length) {
-                        renderQuestionToPlayerView(currentQuestionGlobalIdx);
+                document.getElementById('host-leaderboard-box').classList.add('hidden');
+                db.ref('rooms/' + roomPin + '/currentQuestion').once('value', (snapshot) => {
+                    let nextIdx = snapshot.val() + 1;
+                    if (nextIdx < questionsList.length) {
+                        document.getElementById('host-status-badge').innerText = `ข้อที่ ${nextIdx + 1}`;
+                        startHostTimer();
+                        db.ref('rooms/' + roomPin).update({ currentQuestion: nextIdx, timer: 15 });
                     } else {
-                        document.getElementById('player-final-score').innerText = localPlayerScore;
-                        changeView('finish');
+                        db.ref('rooms/' + roomPin).update({ status: 'finished' });
+                        document.getElementById('btn-next-question').innerText = "🏁 จบคลาสทดสอบ";
                     }
-                }
+                });
+            }
+        }
+
+        // 🙋‍♂️ PLAYER ENGINE
+        function checkUrlParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const pinParam = urlParams.get('pin');
+            if(pinParam) {
+                document.getElementById('player-pin-input').value = pinParam;
+                changeView('join-form');
             }
         }
 
         function joinRoomAsPlayer() {
             const inputPin = document.getElementById('player-pin-input').value.trim();
+            const inputId = document.getElementById('player-id-input').value.trim();
             const inputName = document.getElementById('player-name-input').value.trim();
             
-            if (!inputPin || !inputName) { alert("กรุณากรอกรหัส PIN และชื่อเล่นให้เรียบร้อยครับ!"); return; }
-
+            // ตรวจสอบข้อมูลครบทั้ง 3 ช่อง
+            if (!inputPin || !inputId || !inputName) { alert("กรุณากรอกข้อมูล PIN, รหัสพนักงาน และชื่อเล่นให้ครบถ้วนครับพี่!"); return; }
+            
             if (isOnline) {
                 roomPin = inputPin;
                 db.ref('rooms/' + roomPin).once('value', (snapshot) => {
                     if (!snapshot.exists()) { alert("ไม่พบรหัสห้องนี้ในระบบ!"); return; }
                     const ref = db.ref('rooms/' + roomPin + '/players').push();
                     playerRefKey = ref.key;
-                    ref.set({ name: inputName, score: 0 });
+                    // เซฟข้อมูลลง Firebase เก็บทั้งรหัสพนักงาน (empId) และชื่อเล่น (name)
+                    ref.set({ name: inputName, empId: inputId, score: 0 });
                     changeView('quiz');
                     listenToRoomUpdates();
                 });
-            } else {
-                localPlayerScore = 0;
-                currentQuestionGlobalIdx = 0;
-                renderQuestionToPlayerView(0);
-                changeView('quiz');
             }
         }
 
         function listenToRoomUpdates() {
             db.ref('rooms/' + roomPin).on('value', (snapshot) => {
-                const room = snapshot.val();
-                if (!room) return;
+                const room = snapshot.val(); if (!room) return;
+                
+                document.getElementById('player-timer').innerText = `⏱️ ${room.timer}s`;
+                secondsLeft = room.timer;
+
+                if(room.timer <= 0) {
+                    document.getElementById('quiz-options-box').classList.add('hidden');
+                    document.getElementById('quiz-wait-overlay').classList.remove('hidden');
+                }
+
                 if (room.status === 'playing' && room.currentQuestion !== currentQuestionGlobalIdx) {
                     currentQuestionGlobalIdx = room.currentQuestion;
                     renderQuestionToPlayerView(currentQuestionGlobalIdx);
@@ -358,8 +351,7 @@
         function renderQuestionToPlayerView(idx) {
             document.getElementById('quiz-wait-overlay').classList.add('hidden');
             const optionsBox = document.getElementById('quiz-options-box');
-            optionsBox.classList.remove('hidden');
-            optionsBox.innerHTML = '';
+            optionsBox.classList.remove('hidden'); optionsBox.innerHTML = '';
 
             const qData = questionsList[idx];
             document.getElementById('quiz-q-num').innerText = idx + 1;
@@ -381,18 +373,17 @@
 
         function submitPlayerAnswer(chosenIdx, correctIdx) {
             if (chosenIdx === correctIdx) {
-                localPlayerScore++;
+                let pointsEarned = Math.floor(500 + (secondsLeft / 15) * 500); 
+                localPlayerScore += pointsEarned;
                 if (isOnline && playerRefKey) {
                     db.ref('rooms/' + roomPin + '/players/' + playerRefKey).update({ score: localPlayerScore });
                 }
             }
             document.getElementById('quiz-options-box').classList.add('hidden');
             document.getElementById('quiz-wait-overlay').classList.remove('hidden');
-
-            if (!isOnline) {
-                hostControlGame('next');
-            }
         }
+
+        checkUrlParams();
     </script>
 </body>
 </html>
