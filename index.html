@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SAFETY QUIZ - LOTO MASTER</title>
+    <title>SAFETY QUIZ - LOTO MASTER (LCB1)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;800;900&display=swap" rel="stylesheet">
     
@@ -16,10 +16,11 @@
         .comic-shadow { box-shadow: 6px 6px 0px 0px #000000; }
         .btn-active:active { transform: translate(4px, 4px); box-shadow: 2px 2px 0px 0px #000000; }
         
-        .color-a { background-color: #e21b3c; color: white; }
-        .color-b { background-color: #1368ce; color: white; }
-        .color-c { background-color: #d89e00; color: white; }
-        .color-d { background-color: #26890c; color: white; }
+        /* 🏢 CUSTOM LCB1 LOGO COLORS CONFIGURATION */
+        .color-lcb-darkblue { background-color: #0b1a8a; color: white; } /* สีน้ำเงินเข้ม LCB1 */
+        .color-lcb-lightblue { background-color: #0077c8; color: white; } /* สีฟ้า LCB1 */
+        .color-lcb-red { background-color: #e31b23; color: white; } /* สีแดง LCB1 */
+        .color-lcb-white { background-color: #ffffff; color: #000000; } /* สีขาว LCB1 */
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -84,10 +85,10 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1">
-                <div class="color-a comic-border comic-shadow p-4 flex items-center"><span class="text-4xl mr-4">🔺</span><span id="host-opt-0" class="text-lg md:text-xl font-bold">A</span></div>
-                <div class="color-b comic-border comic-shadow p-4 flex items-center"><span class="text-4xl mr-4">🔷</span><span id="host-opt-1" class="text-lg md:text-xl font-bold">B</span></div>
-                <div class="color-c comic-border comic-shadow p-4 flex items-center"><span class="text-4xl mr-4">🟡</span><span id="host-opt-2" class="text-lg md:text-xl font-bold">C</span></div>
-                <div class="color-d comic-border comic-shadow p-4 flex items-center"><span class="text-4xl mr-4">🟩</span><span id="host-opt-3" class="text-lg md:text-xl font-bold">D</span></div>
+                <div class="color-lcb-darkblue comic-border comic-shadow p-4 flex items-center"><span class="text-4xl mr-4">🔷</span><span id="host-opt-0" class="text-lg md:text-xl font-bold">A</span></div>
+                <div class="color-lcb-lightblue comic-border comic-shadow p-4 flex items-center"><span class="text-4xl mr-4">💎</span><span id="host-opt-1" class="text-lg md:text-xl font-bold">B</span></div>
+                <div class="color-lcb-red comic-border comic-shadow p-4 flex items-center"><span class="text-4xl mr-4">🔺</span><span id="host-opt-2" class="text-lg md:text-xl font-bold">C</span></div>
+                <div class="color-lcb-white comic-border comic-shadow p-4 flex items-center"><span class="text-4xl mr-4">⬜</span><span id="host-opt-3" class="text-lg md:text-xl font-bold">D</span></div>
             </div>
         </div>
 
@@ -146,17 +147,17 @@
             </div>
 
             <div class="grid grid-cols-1 gap-3 flex-1 pb-4 relative">
-                <button onclick="playerSubmit(0)" class="color-a border-4 border-black shadow-sm btn-active flex items-center p-3 text-left">
-                    <span class="text-3xl mr-3">🔺</span><span id="player-opt-0" class="text-sm md:text-md font-bold leading-tight">A</span>
+                <button onclick="playerSubmit(0)" class="color-lcb-darkblue border-4 border-black shadow-sm btn-active flex items-center p-3 text-left">
+                    <span class="text-3xl mr-3">🔷</span><span id="player-opt-0" class="text-sm md:text-md font-bold leading-tight">A</span>
                 </button>
-                <button onclick="playerSubmit(1)" class="color-b border-4 border-black shadow-sm btn-active flex items-center p-3 text-left">
-                    <span class="text-3xl mr-3">🔷</span><span id="player-opt-1" class="text-sm md:text-md font-bold leading-tight">B</span>
+                <button onclick="playerSubmit(1)" class="color-lcb-lightblue border-4 border-black shadow-sm btn-active flex items-center p-3 text-left">
+                    <span class="text-3xl mr-3">💎</span><span id="player-opt-1" class="text-sm md:text-md font-bold leading-tight">B</span>
                 </button>
-                <button onclick="playerSubmit(2)" class="color-c border-4 border-black shadow-sm btn-active flex items-center p-3 text-left">
-                    <span class="text-3xl mr-3">🟡</span><span id="player-opt-2" class="text-sm md:text-md font-bold leading-tight">C</span>
+                <button onclick="playerSubmit(2)" class="color-lcb-red border-4 border-black shadow-sm btn-active flex items-center p-3 text-left">
+                    <span class="text-3xl mr-3">🔺</span><span id="player-opt-2" class="text-sm md:text-md font-bold leading-tight">C</span>
                 </button>
-                <button onclick="playerSubmit(3)" class="color-d border-4 border-black shadow-sm btn-active flex items-center p-3 text-left">
-                    <span class="text-3xl mr-3">🟩</span><span id="player-opt-3" class="text-sm md:text-md font-bold leading-tight">D</span>
+                <button onclick="playerSubmit(3)" class="color-lcb-white border-4 border-black shadow-sm btn-active flex items-center p-3 text-left">
+                    <span class="text-3xl mr-3">⬜</span><span id="player-opt-3" class="text-sm md:text-md font-bold leading-tight">D</span>
                 </button>
 
                 <div id="player-wait-overlay" class="hidden absolute inset-0 bg-white/95 border-4 border-black flex flex-col items-center justify-center text-center p-4">
@@ -212,7 +213,7 @@
             { q: "งานท่าเรือที่ทำ LOTO ได้ไม่ครบถ้วน (เช่น ต้องเปิดเครื่องทดสอบ) ข้อใด ไม่ใช่ สิ่งที่ควรทำ?", o: ["จัดให้มีผู้ควบคุมงาน ทำหน้าที่สั่งเริ่ม-หยุด และมอบหมายบทบาทให้แต่ละคนชัดเจน", "ป้องกันพลังงานบางส่วนเท่าที่ทำได้ เช่น ใส่ยางกันล้อไหล หรือลดแรงดันลม", "สื่อสารให้ชัดเจนก่อนเริ่มงาน ว่าใครอยู่ตำแหน่งไหน ใช้สัญญาณอะไร", "ให้หัวหน้างานอนุมัติลุยหน้างานไปก่อน แล้วค่อยแจ้ง จป. ทราบหลังซ่อมเสร็จ"], ans: 3 },
             { q: "ขั้นตอนเตรียมความพร้อม ข้อใด ไม่ใช่ สิ่งที่พนักงานต้องรู้เกี่ยวกับแหล่งพลังงาน?", o: ["แหล่งพลังงานนั้นเป็นแหล่งพลังงานชนิดใด?", "อันตรายจากแหล่งพลังงานที่จะต้องถูกควบคุมมีอะไรบ้าง?", "จะต้องควบคุมอันตรายนั้นอย่างไร?", "แหล่งพลังงานนั้นถูกเปิดใช้งานมาแล้วกี่ชั่วโมง?"], ans: 3 },
             { q: "อุปกรณ์หลักที่ต้องใช้ควบคู่กันเสมอในทุกประเภทงานของระบบ LOTO คือข้อใด?", o: ["แม่กุญแจความปลอดภัย และ อุปกรณ์กั้นเขตอันตราย", "ป้ายเตือนอันตราย และ ใบอนุญาตทำงาน", "แม่กุญแจ และ ป้ายเตือนอันตราย", "สวิตช์ปิดฉุกเฉิน และ ป้ายเตือนอันตราย"], ans: 2 },
-            { q: "งานด่วนใต้เครนขัดข้อง หัวหน้าสั่งให้มุดไปเคลียร์ 'แค่ 1 นาที' ไม่ต้องทำ LOTO เพราะเรือรีบออก คุณจะทำอย่างไร?", o: ["รีบเข้าไปเคลียร์ให้เสร็จไวๆ แล้วใช้วิทยุสื่อสารคอยเช็กกับห้องคอนโทรลไว้", "วิ่งเข้าไปทำทันทีโดยพกแม่กุญแจติดตัวไปด้วย เผื่อมีคนเปิดระบบจะได้ตะโกนบอก", "ปฏิเสธทันที และยืนยันต้องทำ LOTO ให้เสร็จ เพราะไม่มีเรือลำไหนสำคัญกว่าชีวิตคน", "ยอมเข้าไปเคลียร์ให้ แต่ต้องใส่หมวกเซฟตี้และสายรัดตัวให้แน่นหนากว่าเดิม"], ans: 2 }
+            { q: "งานด่วนใต้เครนขักข้อง หัวหน้าสั่งให้มุดไปเคลียร์ 'แค่ 1 นาที' ไม่ต้องทำ LOTO เพราะเรือรีบออก คุณจะทำอย่างไร?", o: ["รีบเข้าไปเคลียร์ให้เสร็จไวๆ แล้วใช้วิทยุสื่อสารคอยเช็กกับห้องคอนโทรลไว้", "วิ่งเข้าไปทำทันทีโดยพกแม่กุญแจติดตัวไปด้วย เผื่อมีคนเปิดระบบจะได้ตะโกนบอก", "ปฏิเสธทันที และยืนยันต้องทำ LOTO ให้เสร็จ เพราะไม่มีเรือลำไหนสำคัญกว่าชีวิตคน", "ยอมเข้าไปเคลียร์ให้ แต่ต้องใส่หมวกเซฟตี้และสายรัดตัวให้แน่นหนากว่าเดิม"], ans: 2 }
         ];
 
         let currentRoom = ""; let playerKey = ""; let isHost = false;
@@ -276,15 +277,14 @@
             changeView('host-lobby');
         }
 
-        // ฟังชันก์ยกเลิกห้องฝั่ง Host
         function hostCancelRoom() {
             if(confirm("คุณต้องการยกเลิกและปิดห้องทดสอบนี้ใช่หรือไม่?")) {
                 clearInterval(hostTimerObj);
                 bgmGame.pause();
                 if(currentRoom) {
-                    db.ref(`rooms/${currentRoom}`).remove(); // ลบข้อมูลห้องบน Firebase
+                    db.ref(`rooms/${currentRoom}`).remove();
                 }
-                location.reload(); // เคลียร์หน้าจอกลับจุดเริ่มต้น
+                location.reload();
             }
         }
 
@@ -417,14 +417,13 @@
             });
         }
 
-        // ฟังก์ชันออกจากห้องฝั่ง Player (กดก่อนเกมเริ่ม)
         function playerLeaveRoom() {
             if(confirm("คุณต้องการออกจากห้องรอการทดสอบนี้ใช่หรือไม่?")) {
                 if(currentRoom && playerKey) {
-                    db.ref(`rooms/${currentRoom}/players/${playerKey}`).remove(); // ลบรายชื่อบน Firebase
+                    db.ref(`rooms/${currentRoom}/players/${playerKey}`).remove();
                 }
                 playerKey = "";
-                location.reload(); // พากลับหน้าแรก
+                location.reload();
             }
         }
 
