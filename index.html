@@ -16,11 +16,11 @@
         .comic-shadow { box-shadow: 6px 6px 0px 0px #000000; }
         .btn-active:active { transform: translate(4px, 4px); box-shadow: 2px 2px 0px 0px #000000; }
         
-        /* 🏢 CUSTOM LCB1 LOGO COLORS CONFIGURATION */
-        .color-lcb-darkblue { background-color: #0b1a8a; color: white; } /* สีน้ำเงินเข้ม LCB1 */
-        .color-lcb-lightblue { background-color: #0077c8; color: white; } /* สีฟ้า LCB1 */
-        .color-lcb-red { background-color: #e31b23; color: white; } /* สีแดง LCB1 */
-        .color-lcb-white { background-color: #ffffff; color: #000000; } /* สีขาว LCB1 */
+        /* 🏢 LCB1 BRANDING COLORS */
+        .color-lcb-darkblue { background-color: #0b1a8a; color: white; }
+        .color-lcb-lightblue { background-color: #0077c8; color: white; }
+        .color-lcb-red { background-color: #e31b23; color: white; }
+        .color-lcb-white { background-color: #ffffff; color: #000000; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -93,20 +93,54 @@
         </div>
 
         <div id="view-host-answer" class="hidden flex-1 flex flex-col items-center justify-center">
-            <div class="bg-white comic-border comic-shadow p-8 text-center w-full max-w-4xl mb-8">
-                <h1 class="text-3xl font-black text-red-600 mb-4">หมดเวลา!</h1>
-                <p class="text-xl font-bold text-slate-600">คำตอบที่ถูกต้องคือ</p>
-                <h2 id="host-correct-ans-title" class="text-2xl md:text-3xl font-black text-green-600 mt-2 p-4 bg-green-50 border-4 border-green-500 rounded-xl">...</h2>
+            <div class="bg-white comic-border comic-shadow p-6 text-center w-full max-w-4xl mb-6">
+                <h1 class="text-2xl font-black text-red-600 mb-2">หมดเวลา!</h1>
+                <p class="text-lg font-bold text-slate-600">คำตอบที่ถูกต้องคือ</p>
+                <h2 id="host-correct-ans-title" class="text-2xl md:text-3xl font-black text-green-600 mt-1 p-3 bg-green-50 border-4 border-green-500 rounded-xl">...</h2>
             </div>
             
-            <div id="host-leaderboard" class="bg-orange-100 comic-border comic-shadow w-full max-w-3xl p-8 hidden mb-8">
-                <h2 class="text-3xl font-black text-center mb-6 text-orange-600">🏆 Top 3 Leaderboard 🏆</h2>
-                <div id="leaderboard-container" class="space-y-4"></div>
+            <div class="bg-white comic-border comic-shadow w-full max-w-3xl p-6 mb-6">
+                <h3 class="text-xl font-black text-center mb-4 text-black border-b-4 border-black pb-2">📊 สรุปจำนวนผู้ตอบแยกตามสีช้อยส์</h3>
+                <div class="space-y-3">
+                    <div class="flex items-center">
+                        <span class="w-12 text-2xl text-center">🔷</span>
+                        <div class="flex-1 bg-gray-200 h-8 comic-border overflow-hidden">
+                            <div id="bar-ans-0" class="color-lcb-darkblue h-full transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                        <span id="count-ans-0" class="w-20 text-right font-black text-lg">0 คน</span>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="w-12 text-2xl text-center">💎</span>
+                        <div class="flex-1 bg-gray-200 h-8 comic-border overflow-hidden">
+                            <div id="bar-ans-1" class="color-lcb-lightblue h-full transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                        <span id="count-ans-1" class="w-20 text-right font-black text-lg">0 คน</span>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="w-12 text-2xl text-center">🔺</span>
+                        <div class="flex-1 bg-gray-200 h-8 comic-border overflow-hidden">
+                            <div id="bar-ans-2" class="color-lcb-red h-full transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                        <span id="count-ans-2" class="w-20 text-right font-black text-lg">0 คน</span>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="w-12 text-2xl text-center">⬜</span>
+                        <div class="flex-1 bg-gray-200 h-8 comic-border overflow-hidden">
+                            <div id="bar-ans-3" class="color-lcb-white h-full transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                        <span id="count-ans-3" class="w-20 text-right font-black text-lg">0 คน</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="host-leaderboard" class="bg-orange-100 comic-border comic-shadow w-full max-w-3xl p-6 hidden mb-6">
+                <h2 class="text-2xl font-black text-center mb-4 text-orange-600">🏆 ทำเนียบ Top 3 คะแนนสูงสุด 🏆</h2>
+                <div id="leaderboard-container" class="space-y-3"></div>
             </div>
 
             <div class="flex space-x-4 w-full max-w-3xl">
-                <button onclick="hostShowLeaderboard()" id="btn-show-rank" class="flex-1 bg-yellow-400 text-black text-2xl font-black py-4 comic-border comic-shadow btn-active">ดูอันดับคะแนน</button>
-                <button onclick="hostChangeState('next')" id="btn-next-q" class="hidden flex-1 bg-blue-500 text-white text-2xl font-black py-4 comic-border comic-shadow btn-active">ข้อต่อไป ➡️</button>
+                <button onclick="hostShowLeaderboard()" id="btn-show-rank" class="hidden flex-1 bg-yellow-400 text-black text-2xl font-black py-4 comic-border comic-shadow btn-active">ดูอันดับคะแนนสูงสุดสรุปเกม 🏆</button>
+                <button onclick="hostChangeState('next')" id="btn-next-q" class="flex-1 bg-blue-500 text-white text-2xl font-black py-4 comic-border comic-shadow btn-active">ข้อต่อไป ➡️</button>
             </div>
         </div>
 
@@ -162,8 +196,8 @@
 
                 <div id="player-wait-overlay" class="hidden absolute inset-0 bg-white/95 border-4 border-black flex flex-col items-center justify-center text-center p-4">
                     <div class="text-5xl mb-2">🔒</div>
-                    <h2 class="text-2xl font-black text-red-600">บันทึกคำตอบแล้ว!</h2>
-                    <p class="text-md font-bold text-gray-800 mt-2">รอสัญญาณเฉลยบนกระดาน...</p>
+                    <h2 class="text-2xl font-black text-purple-700">ส่งคำตอบเรียบร้อย!</h2>
+                    <p class="text-md font-bold text-gray-800 mt-2">รอสัญญาณการคำนวณคะแนนสักครู่ครับ...</p>
                 </div>
             </div>
         </div>
@@ -171,21 +205,20 @@
         <div id="view-player-result" class="hidden flex-1 flex flex-col items-center justify-center p-6 text-white text-center comic-border comic-shadow">
             <h1 id="player-result-title" class="text-5xl font-black mb-2">...</h1>
             <p id="player-result-points" class="text-2xl font-bold bg-black/30 px-6 py-2 rounded-full mt-4 border-2 border-white"></p>
-            <p class="text-lg font-bold mt-8">รอหน้าจอหลักเพื่อไปข้อถัดไป...</p>
+            <p id="player-total-hint" class="text-md text-gray-200 mt-6 font-bold">ระบบปิดระบบแสดงคะแนนรวมไว้ เจอกันข้อถัดไป!</p>
         </div>
 
     </div>
 
     <script>
-        // --- 🎵 Sound Effects Setup ---
+        // --- 🎵 Sound Effects ---
         const sfxJoin = new Audio('https://assets.mixkit.co/active_storage/sfx/2870/2870-preview.mp3'); 
         const sfxTick = new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3'); 
         const sfxCorrect = new Audio('https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3'); 
         const sfxWrong = new Audio('https://assets.mixkit.co/active_storage/sfx/3112/3112-preview.mp3'); 
         
         const bgmGame = new Audio('https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3'); 
-        bgmGame.loop = true; 
-        bgmGame.volume = 0.3;
+        bgmGame.loop = true; bgmGame.volume = 0.3;
 
         const firebaseConfig = {
             apiKey: "AIzaSyA-BNjTFR15PBWThOFyB10UcQR50jUvkTM",
@@ -205,7 +238,7 @@
             document.getElementById('network-status').innerText = "🟢 ออนไลน์";
             document.getElementById('network-status').className = "text-xs font-bold text-green-800 bg-green-300 border-2 border-black px-3 py-1 rounded-full";
         } catch (e) {
-            alert("Firebase Error: ไม่สามารถเชื่อมต่อฐานข้อมูลได้");
+            alert("Firebase Error: ไม่สามารถเข้าถึงฐานข้อมูลกลางได้");
         }
 
         const questionsList = [
@@ -213,7 +246,7 @@
             { q: "งานท่าเรือที่ทำ LOTO ได้ไม่ครบถ้วน (เช่น ต้องเปิดเครื่องทดสอบ) ข้อใด ไม่ใช่ สิ่งที่ควรทำ?", o: ["จัดให้มีผู้ควบคุมงาน ทำหน้าที่สั่งเริ่ม-หยุด และมอบหมายบทบาทให้แต่ละคนชัดเจน", "ป้องกันพลังงานบางส่วนเท่าที่ทำได้ เช่น ใส่ยางกันล้อไหล หรือลดแรงดันลม", "สื่อสารให้ชัดเจนก่อนเริ่มงาน ว่าใครอยู่ตำแหน่งไหน ใช้สัญญาณอะไร", "ให้หัวหน้างานอนุมัติลุยหน้างานไปก่อน แล้วค่อยแจ้ง จป. ทราบหลังซ่อมเสร็จ"], ans: 3 },
             { q: "ขั้นตอนเตรียมความพร้อม ข้อใด ไม่ใช่ สิ่งที่พนักงานต้องรู้เกี่ยวกับแหล่งพลังงาน?", o: ["แหล่งพลังงานนั้นเป็นแหล่งพลังงานชนิดใด?", "อันตรายจากแหล่งพลังงานที่จะต้องถูกควบคุมมีอะไรบ้าง?", "จะต้องควบคุมอันตรายนั้นอย่างไร?", "แหล่งพลังงานนั้นถูกเปิดใช้งานมาแล้วกี่ชั่วโมง?"], ans: 3 },
             { q: "อุปกรณ์หลักที่ต้องใช้ควบคู่กันเสมอในทุกประเภทงานของระบบ LOTO คือข้อใด?", o: ["แม่กุญแจความปลอดภัย และ อุปกรณ์กั้นเขตอันตราย", "ป้ายเตือนอันตราย และ ใบอนุญาตทำงาน", "แม่กุญแจ และ ป้ายเตือนอันตราย", "สวิตช์ปิดฉุกเฉิน และ ป้ายเตือนอันตราย"], ans: 2 },
-            { q: "งานด่วนใต้เครนขักข้อง หัวหน้าสั่งให้มุดไปเคลียร์ 'แค่ 1 นาที' ไม่ต้องทำ LOTO เพราะเรือรีบออก คุณจะทำอย่างไร?", o: ["รีบเข้าไปเคลียร์ให้เสร็จไวๆ แล้วใช้วิทยุสื่อสารคอยเช็กกับห้องคอนโทรลไว้", "วิ่งเข้าไปทำทันทีโดยพกแม่กุญแจติดตัวไปด้วย เผื่อมีคนเปิดระบบจะได้ตะโกนบอก", "ปฏิเสธทันที และยืนยันต้องทำ LOTO ให้เสร็จ เพราะไม่มีเรือลำไหนสำคัญกว่าชีวิตคน", "ยอมเข้าไปเคลียร์ให้ แต่ต้องใส่หมวกเซฟตี้และสายรัดตัวให้แน่นหนากว่าเดิม"], ans: 2 }
+            { q: "งานด่วนใต้เครนขัดข้อง หัวหน้าสั่งให้มุดไปเคลียร์ 'แค่ 1 นาที' ไม่ต้องทำ LOTO เพราะเรือรีบออก คุณจะทำอย่างไร?", o: ["รีบเข้าไปเคลียร์ให้เสร็จไวๆ แล้วใช้วิทยุสื่อสารคอยเช็กกับห้องคอนโทรลไว้", "วิ่งเข้าไปทำทันทีโดยพกแม่กุญแจติดตัวไปด้วย เผื่อมีคนเปิดระบบจะได้ตะโกนบอก", "ปฏิเสธทันที และยืนยันต้องทำ LOTO ให้เสร็จ เพราะไม่มีเรือลำไหนสำคัญกว่าชีวิตคน", "ยอมเข้าไปเคลียร์ให้ แต่ต้องใส่หมวกเซฟตี้และสายรัดตัวให้แน่นหนากว่าเดิม"], ans: 2 }
         ];
 
         let currentRoom = ""; let playerKey = ""; let isHost = false;
@@ -230,7 +263,7 @@
         }
 
         // ==========================================
-        // 👨‍🏫 HOST ENGINE 
+        // 👨‍🏫 HOST ENGINE (GM)
         // ==========================================
         function setupHostMode() {
             isHost = true;
@@ -281,9 +314,7 @@
             if(confirm("คุณต้องการยกเลิกและปิดห้องทดสอบนี้ใช่หรือไม่?")) {
                 clearInterval(hostTimerObj);
                 bgmGame.pause();
-                if(currentRoom) {
-                    db.ref(`rooms/${currentRoom}`).remove();
-                }
+                if(currentRoom) db.ref(`rooms/${currentRoom}`).remove();
                 location.reload();
             }
         }
@@ -299,8 +330,6 @@
                 } else {
                     bgmGame.pause(); 
                     db.ref(`rooms/${currentRoom}`).update({ status: 'finished' });
-                    document.getElementById('host-correct-ans-title').innerText = "🏁 จบการทดสอบ 🏁";
-                    document.getElementById('btn-next-q').classList.add('hidden');
                 }
             }
         }
@@ -315,15 +344,15 @@
             document.getElementById('host-opt-2').innerText = q.o[2];
             document.getElementById('host-opt-3').innerText = q.o[3];
             
+            // ซ่อนบอร์ดคะแนนรวม เคลียร์สถานะปุ่ม
             document.getElementById('host-leaderboard').classList.add('hidden');
-            document.getElementById('btn-show-rank').classList.remove('hidden');
-            document.getElementById('btn-next-q').classList.add('hidden');
+            document.getElementById('btn-show-rank').classList.add('hidden');
+            document.getElementById('btn-next-q').classList.remove('hidden');
 
             db.ref(`rooms/${currentRoom}`).update({ status: 'playing', qIndex: idx, timer: 25 });
             changeView('host-game');
 
-            bgmGame.currentTime = 0; 
-            bgmGame.play().catch(e => console.log('BGM Error'));
+            bgmGame.currentTime = 0; bgmGame.play().catch(e => console.log('BGM Error'));
 
             globalTimer = 25;
             document.getElementById('host-timer').innerText = globalTimer;
@@ -350,14 +379,43 @@
             bgmGame.pause(); 
 
             const correctText = questionsList[idx].o[questionsList[idx].ans];
-            document.getElementById('host-correct-ans-title').innerHTML = `<span class="text-2xl mt-2 block text-black">คำตอบที่ถูกคือ: <br><span class="text-3xl md:text-4xl text-green-600 mt-2 block">${correctText}</span></span>`;
+            document.getElementById('host-correct-ans-title').innerHTML = `<span class="text-xl mt-1 block text-black">คำตอบที่ถูกคือ: <br><span class="text-2xl md:text-3xl text-green-600 mt-1 block font-black">${correctText}</span></span>`;
+            
+            // 📊 คำนวณสถิติแยกตามสีตัวเลือกส่งไปแสดงผลบนจอ GM
+            db.ref(`rooms/${currentRoom}/players`).once('value', snap => {
+                const players = snap.val();
+                let counts = [0, 0, 0, 0];
+                if(players) {
+                    Object.values(players).forEach(p => {
+                        if(p.answered === idx && p.selectedChoice !== undefined && p.selectedChoice >= 0 && p.selectedChoice <= 3) {
+                            counts[p.selectedChoice]++;
+                        }
+                    });
+                }
+                
+                let totalAnswered = counts.reduce((a, b) => a + b, 0) || 1;
+                for(let i=0; i<4; i++) {
+                    let pct = Math.floor((counts[i] / totalAnswered) * 100);
+                    document.getElementById(`bar-ans-${i}`).style.width = pct + '%';
+                    document.getElementById(`count-ans-${i}`).innerText = `${counts[i]} คน`;
+                }
+            });
+
+            // ตรวจสอบว่าเป็นข้อสุดท้ายหรือไม่
+            if(idx === questionsList.length - 1) {
+                document.getElementById('btn-next-q').classList.add('hidden');
+                document.getElementById('btn-show-rank').classList.remove('hidden'); // ข้อสุดท้ายให้เปิดปุ่มดูผู้ชนะสูงสุด
+            } else {
+                document.getElementById('btn-next-q').classList.remove('hidden');
+                document.getElementById('btn-show-rank').classList.add('hidden');
+            }
+
             db.ref(`rooms/${currentRoom}`).update({ status: 'answer' });
             changeView('host-answer');
         }
 
         function hostShowLeaderboard() {
             document.getElementById('btn-show-rank').classList.add('hidden');
-            document.getElementById('btn-next-q').classList.remove('hidden');
             document.getElementById('host-leaderboard').classList.remove('hidden');
 
             db.ref(`rooms/${currentRoom}/players`).once('value', snap => {
@@ -366,10 +424,10 @@
                 container.innerHTML = '';
                 if(players) {
                     const sorted = Object.values(players).sort((a,b) => b.score - a.score).slice(0,3);
-                    const medals = ['🥇', '🥈', '🥉'];
+                    const medals = ['🥇 อันดับ 1', '🥈 อันดับ 2', '🥉 อันดับ 3'];
                     sorted.forEach((p, i) => {
-                        container.innerHTML += `<div class="bg-white border-2 border-black p-4 flex justify-between text-xl md:text-2xl font-black">
-                            <span>${medals[i]} ${p.name}</span> <span class="text-purple-700">${p.score} pt</span>
+                        container.innerHTML += `<div class="bg-white border-4 border-black p-4 flex justify-between text-xl md:text-2xl font-black comic-shadow">
+                            <span>${medals[i]}: ${p.name} (${p.empId})</span> <span class="text-purple-700">${p.score} คะแนน</span>
                         </div>`;
                     });
                 }
@@ -397,31 +455,26 @@
 
             currentRoom = pin;
             db.ref(`rooms/${currentRoom}`).once('value', snap => {
-                if(!snap.exists()) { alert("ไม่พบรหัสห้องนี้ กรุณาเช็กหน้าจอหลักอีกครั้งครับ"); return; }
-                if(snap.val().status !== 'lobby') { alert("ห้องทดสอบนี้เริ่มเล่นไปแล้ว ไม่สามารถเข้าร่วมย้อนหลังได้ครับ"); return; }
+                if(!snap.exists()) { alert("ไม่พบรหัสห้องนี้ กรุณาตรวจสอบใหม่อีกครั้งครับ"); return; }
+                if(snap.val().status !== 'lobby') { alert("ห้องทดสอบเริ่มเล่นไปแล้ว ไม่สามารถเข้ากลางคันได้ครับ"); return; }
                 
                 const ref = db.ref(`rooms/${currentRoom}/players`).push();
                 playerKey = ref.key;
                 
-                ref.set({ name: name, empId: id, score: 0, answered: -1 })
+                ref.set({ name: name, empId: id, score: 0, answered: -1, selectedChoice: -1, lastEarned: 0 })
                     .then(() => {
-                        sfxJoin.play().catch(e => console.log('Init audio'));
+                        sfxJoin.play().catch(e => console.log('Init sfx'));
                         sfxJoin.pause(); sfxJoin.currentTime = 0;
-                        
                         changeView('player-waiting');
                         listenToGame();
                     })
-                    .catch((error) => {
-                        alert("⚠️ เซิร์ฟเวอร์ปฏิเสธการเข้าห้อง!\n" + error.message);
-                    });
+                    .catch((err) => { alert("เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์: " + err.message); });
             });
         }
 
         function playerLeaveRoom() {
             if(confirm("คุณต้องการออกจากห้องรอการทดสอบนี้ใช่หรือไม่?")) {
-                if(currentRoom && playerKey) {
-                    db.ref(`rooms/${currentRoom}/players/${playerKey}`).remove();
-                }
+                if(currentRoom && playerKey) db.ref(`rooms/${currentRoom}/players/${playerKey}`).remove();
                 playerKey = "";
                 location.reload();
             }
@@ -451,12 +504,18 @@
                         changeView('player-game');
                     }
                 } else if (room.status === 'answer') {
-                    if(!localHasAnswered) {
-                        showPlayerResult(false, 0); 
-                    }
+                    // เมื่อ GM สั่งหมดเวลา ดึงข้อมูลสถานะข้อนี้ขึ้นมาแจกแจงบนหน้าจอพนักงาน
+                    db.ref(`rooms/${currentRoom}/players/${playerKey}`).once('value', pSnap => {
+                        const pData = pSnap.val();
+                        if(pData) {
+                            const isCorrect = (pData.selectedChoice === questionsList[currentQIdx].ans);
+                            showPlayerResult(isCorrect, pData.lastEarned);
+                        }
+                    });
                 } else if (room.status === 'finished') {
-                    document.getElementById('player-result-title').innerText = "เกมจบแล้ว!";
-                    document.getElementById('player-result-points').innerText = `คะแนนรวม: ${localScore}`;
+                    document.getElementById('player-result-title').innerText = "🏁 จบการทดสอบ 🏁";
+                    document.getElementById('player-result-points').innerText = `คะแนนสุทธิรวมทุกข้อ: ${localScore}`;
+                    document.getElementById('player-total-hint').innerText = "ขอบคุณที่ร่วมสนุกและรักษากฎความปลอดภัย LOTO ครับ";
                     changeView('player-result');
                 }
             });
@@ -474,41 +533,45 @@
                 earned = Math.floor((globalTimer / 25) * 1000);
                 if(earned < 500) earned = 500; 
                 localScore += earned;
+            } else {
+                earned = 0;
             }
 
+            // บันทึกตัวเลือก และคะแนนเฉพาะข้อลงฐานข้อมูลเพื่อให้หน้า GM และผู้เล่นดึงไปประมวลผล
             db.ref(`rooms/${currentRoom}/players/${playerKey}`).update({ 
                 score: localScore,
-                answered: currentQIdx 
+                answered: currentQIdx,
+                selectedChoice: answerIdx,
+                lastEarned: earned
             });
 
             document.getElementById('player-wait-overlay').classList.remove('hidden');
-            
-            showPlayerResult(isCorrect, earned, true);
         }
 
-        function showPlayerResult(isCorrect, points, isPreload = false) {
+        function showPlayerResult(isCorrect, points) {
             const bg = document.getElementById('view-player-result');
             const title = document.getElementById('player-result-title');
             const pts = document.getElementById('player-result-points');
 
-            if(!isPreload) {
-                if(isCorrect) {
-                    sfxCorrect.currentTime = 0; sfxCorrect.play().catch(e => console.log('Audio error'));
-                } else {
-                    sfxWrong.currentTime = 0; sfxWrong.play().catch(e => console.log('Audio error'));
-                }
-            }
-
             if(isCorrect) {
+                sfxCorrect.currentTime = 0; sfxCorrect.play().catch(e => console.log('Audio error'));
                 bg.className = "hidden flex-1 flex flex-col items-center justify-center p-6 text-black text-center bg-green-400 comic-border comic-shadow";
-                title.innerText = "ถูกต้อง! ✔️";
-                pts.innerText = `+${points} คะแนน`;
+                title.innerText = "ถูกต้องครับ! ✔️";
+                pts.innerText = `+ ${points} คะแนน (ในข้อนี้)`;
             } else {
+                sfxWrong.currentTime = 0; sfxWrong.play().catch(e => console.log('Audio error'));
                 bg.className = "hidden flex-1 flex flex-col items-center justify-center p-6 text-white text-center bg-red-500 comic-border comic-shadow";
-                title.innerText = "ผิดคำตอบ ❌";
-                pts.innerText = "ไม่ได้คะแนนในข้อนี้";
+                title.innerText = "คำตอบไม่ถูกต้อง! ❌";
+                pts.innerText = "+ 0 คะแนน (ในข้อนี้)";
             }
-            if(!isPreload) changeView('player-result');
+            
+            if(currentQIdx === questionsList.length - 1) {
+                document.getElementById('player-total-hint').innerText = "ทำครบทุกข้อแล้ว! รอสรุปตารางผู้ชนะบนหน้าจอวิทยากร...";
+            } else {
+                document.getElementById('player-total-hint').innerText = "ระบบปิดการแสดงผลคะแนนสะสมรวมไว้ เจอกันข้อถัดไป!";
+            }
+            
+            changeView('player-result');
         }
 
         checkAutoJoin();
