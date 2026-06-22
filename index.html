@@ -72,27 +72,27 @@
                 <span id="host-q-number" class="text-2xl font-black text-slate-800 bg-white px-4 py-1 comic-border">ข้อที่ 1</span>
                 <span id="host-answer-counter" class="text-xl font-black text-black bg-cyan-300 px-4 py-2 comic-border">ตอบแล้ว: 0 / 0 คน</span>
                 <div class="bg-red-500 text-white text-4xl font-black w-20 h-20 flex items-center justify-center rounded-full comic-border">
-                    <span id="host-timer">15</span>
+                    <span id="host-timer">25</span>
                 </div>
             </div>
 
             <div class="bg-white comic-border comic-shadow p-6 mb-6 text-center min-h-[120px] flex items-center justify-center">
-                <h1 id="host-question-text" class="text-2xl md:text-4xl font-black text-slate-800 leading-relaxed">โจทย์คำถาม...</h1>
+                <h1 id="host-question-text" class="text-2xl md:text-3xl font-black text-slate-800 leading-relaxed">โจทย์คำถาม...</h1>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1">
-                <div class="color-a comic-border comic-shadow p-4 flex items-center"><span class="text-4xl mr-4">🔺</span><span id="host-opt-0" class="text-xl font-bold">A</span></div>
-                <div class="color-b comic-border comic-shadow p-4 flex items-center"><span class="text-4xl mr-4">🔷</span><span id="host-opt-1" class="text-xl font-bold">B</span></div>
-                <div class="color-c comic-border comic-shadow p-4 flex items-center"><span class="text-4xl mr-4">🟡</span><span id="host-opt-2" class="text-xl font-bold">C</span></div>
-                <div class="color-d comic-border comic-shadow p-4 flex items-center"><span class="text-4xl mr-4">🟩</span><span id="host-opt-3" class="text-xl font-bold">D</span></div>
+                <div class="color-a comic-border comic-shadow p-4 flex items-center"><span class="text-4xl mr-4">🔺</span><span id="host-opt-0" class="text-lg md:text-xl font-bold">A</span></div>
+                <div class="color-b comic-border comic-shadow p-4 flex items-center"><span class="text-4xl mr-4">🔷</span><span id="host-opt-1" class="text-lg md:text-xl font-bold">B</span></div>
+                <div class="color-c comic-border comic-shadow p-4 flex items-center"><span class="text-4xl mr-4">🟡</span><span id="host-opt-2" class="text-lg md:text-xl font-bold">C</span></div>
+                <div class="color-d comic-border comic-shadow p-4 flex items-center"><span class="text-4xl mr-4">🟩</span><span id="host-opt-3" class="text-lg md:text-xl font-bold">D</span></div>
             </div>
         </div>
 
         <div id="view-host-answer" class="hidden flex-1 flex flex-col items-center justify-center">
-            <div class="bg-white comic-border comic-shadow p-8 text-center w-full max-w-3xl mb-8">
+            <div class="bg-white comic-border comic-shadow p-8 text-center w-full max-w-4xl mb-8">
                 <h1 class="text-3xl font-black text-red-600 mb-4">หมดเวลา!</h1>
                 <p class="text-xl font-bold text-slate-600">คำตอบที่ถูกต้องคือ</p>
-                <h2 id="host-correct-ans-title" class="text-3xl font-black text-green-600 mt-2 p-4 bg-green-50 border-4 border-green-500 rounded-xl">...</h2>
+                <h2 id="host-correct-ans-title" class="text-2xl md:text-3xl font-black text-green-600 mt-2 p-4 bg-green-50 border-4 border-green-500 rounded-xl">...</h2>
             </div>
             
             <div id="host-leaderboard" class="bg-orange-100 comic-border comic-shadow w-full max-w-3xl p-8 hidden mb-8">
@@ -128,28 +128,28 @@
         <div id="view-player-game" class="hidden flex-1 flex flex-col">
             <div class="flex justify-between items-center mb-3">
                 <span id="player-q-number" class="text-sm font-black bg-white px-3 py-1 border-2 border-black">ข้อที่ 1</span>
-                <span id="player-timer-display" class="text-sm font-black text-red-600 bg-white px-3 py-1 border-2 border-black">⏱️ 15s</span>
+                <span id="player-timer-display" class="text-sm font-black text-red-600 bg-white px-3 py-1 border-2 border-black">⏱️ 25s</span>
             </div>
             
             <div class="bg-white border-4 border-black p-4 mb-4 shadow-sm text-center">
-                <h1 id="player-question-text" class="text-xl font-black text-slate-800 leading-snug">โจทย์...</h1>
+                <h1 id="player-question-text" class="text-lg md:text-xl font-black text-slate-800 leading-snug">โจทย์...</h1>
             </div>
 
             <div class="grid grid-cols-1 gap-3 flex-1 pb-4 relative">
                 <button onclick="playerSubmit(0)" class="color-a border-4 border-black shadow-sm btn-active flex items-center p-3 text-left">
-                    <span class="text-3xl mr-3">🔺</span><span id="player-opt-0" class="text-md font-bold leading-tight">A</span>
+                    <span class="text-3xl mr-3">🔺</span><span id="player-opt-0" class="text-sm md:text-md font-bold leading-tight">A</span>
                 </button>
                 <button onclick="playerSubmit(1)" class="color-b border-4 border-black shadow-sm btn-active flex items-center p-3 text-left">
-                    <span class="text-3xl mr-3">🔷</span><span id="player-opt-1" class="text-md font-bold leading-tight">B</span>
+                    <span class="text-3xl mr-3">🔷</span><span id="player-opt-1" class="text-sm md:text-md font-bold leading-tight">B</span>
                 </button>
                 <button onclick="playerSubmit(2)" class="color-c border-4 border-black shadow-sm btn-active flex items-center p-3 text-left">
-                    <span class="text-3xl mr-3">🟡</span><span id="player-opt-2" class="text-md font-bold leading-tight">C</span>
+                    <span class="text-3xl mr-3">🟡</span><span id="player-opt-2" class="text-sm md:text-md font-bold leading-tight">C</span>
                 </button>
                 <button onclick="playerSubmit(3)" class="color-d border-4 border-black shadow-sm btn-active flex items-center p-3 text-left">
-                    <span class="text-3xl mr-3">🟩</span><span id="player-opt-3" class="text-md font-bold leading-tight">D</span>
+                    <span class="text-3xl mr-3">🟩</span><span id="player-opt-3" class="text-sm md:text-md font-bold leading-tight">D</span>
                 </button>
 
-                <div id="player-wait-overlay" class="hidden absolute inset-0 bg-white/90 border-4 border-black flex flex-col items-center justify-center text-center p-4">
+                <div id="player-wait-overlay" class="hidden absolute inset-0 bg-white/95 border-4 border-black flex flex-col items-center justify-center text-center p-4">
                     <div class="text-5xl mb-2">🔒</div>
                     <h2 class="text-2xl font-black text-red-600">บันทึกคำตอบแล้ว!</h2>
                     <p class="text-md font-bold text-gray-800 mt-2">รอสัญญาณเฉลยบนกระดาน...</p>
@@ -166,6 +166,13 @@
     </div>
 
     <script>
+        // --- 🎵 Sound Effects Setup ---
+        // ใช้ไฟล์เสียง Public ฟรีที่เสถียรสำหรับ UI
+        const sfxJoin = new Audio('https://assets.mixkit.co/active_storage/sfx/2870/2870-preview.mp3'); // ติ๊งตอนเข้าห้อง
+        const sfxTick = new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3'); // เสียงนาฬิกา
+        const sfxCorrect = new Audio('https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3'); // ถูกต้อง
+        const sfxWrong = new Audio('https://assets.mixkit.co/active_storage/sfx/3112/3112-preview.mp3'); // ผิดพลาด
+
         const firebaseConfig = {
             apiKey: "AIzaSyA-BNjTFR15PBWThOFyB10UcQR50jUvkTM",
             authDomain: "lcb1-loto-game.firebaseapp.com",
@@ -187,25 +194,19 @@
             alert("Firebase Error: ไม่สามารถเชื่อมต่อฐานข้อมูลได้");
         }
 
+        // ข้อความโจทย์และช้อยส์แบบเต็ม 100% ไม่มีย่อ (5 ข้อ)
         const questionsList = [
-            { q: "ข้อใด ไม่ใช่ ขั้นตอน LOTO ที่ถูกต้อง?", o: ["ควบคุมพลังงานสะสม", "ตรวจสอบว่าปลอดภัยหรือไม่", "ปิดเครื่องจักรหรืออุปกรณ์", "แขวนป้ายเตือนโดยไม่ล็อกจุดตัดแยก"], ans: 3 },
-            { q: "งานที่ทำ LOTO ไม่ครบถ้วน ข้อใด ไม่ใช่ สิ่งที่ควรทำ?", o: ["จัดให้มีผู้ควบคุมงาน", "ป้องกันพลังงานบางส่วนเท่าที่ทำได้", "สื่อสารให้ชัดเจนก่อนเริ่มงาน", "ให้หัวหน้าอนุมัติลุยก่อน แล้วค่อยแจ้ง จป."], ans: 3 },
-            { q: "ขั้นตอนเตรียมความพร้อม ข้อใด ไม่ใช่ สิ่งที่ต้องรู้?", o: ["แหล่งพลังงานเป็นชนิดใด?", "อันตรายจากแหล่งพลังงานมีอะไรบ้าง?", "จะต้องควบคุมอันตรายนั้นอย่างไร?", "เปิดใช้งานมาแล้วกี่ชั่วโมง?"], ans: 3 },
-            { q: "อุปกรณ์หลักที่ต้องใช้คู่กันเสมอใน LOTO คือข้อใด?", o: ["แม่กุญแจ และ อุปกรณ์กั้นเขต", "ป้ายเตือน และ ใบอนุญาตทำงาน", "แม่กุญแจ และ ป้ายเตือนอันตราย", "สวิตช์ปิดฉุกเฉิน และ ป้ายเตือน"], ans: 2 },
-            { q: "งานด่วน 1 นาที หัวหน้าสั่งไม่ต้อง LOTO คุณจะทำอย่างไร?", o: ["รีบเข้าไปเคลียร์ไวๆ", "วิ่งไปทำและพกกุญแจติดตัว", "ปฏิเสธทันที และยืนยันต้องทำ LOTO", "ยอมทำแต่ใส่ PPE ให้ครบ"], ans: 2 }
+            { q: "ข้อใด ไม่ใช่ ขั้นตอน LOTO ที่ถูกต้อง?", o: ["ควบคุมพลังงานสะสม", "ตรวจสอบว่าปลอดภัยหรือไม่", "ปิดเครื่องจักรหรืออุปกรณ์", "แขวนป้ายเตือนไว้หน้าห้องควบคุมโดยไม่ล็อกจุดตัดแยก"], ans: 3 },
+            { q: "งานท่าเรือที่ทำ LOTO ได้ไม่ครบถ้วน (เช่น ต้องเปิดเครื่องทดสอบ) ข้อใด ไม่ใช่ สิ่งที่ควรทำ?", o: ["จัดให้มีผู้ควบคุมงาน ทำหน้าที่สั่งเริ่ม-หยุด และมอบหมายบทบาทให้แต่ละคนชัดเจน", "ป้องกันพลังงานบางส่วนเท่าที่ทำได้ เช่น ใส่ยางกันล้อไหล หรือลดแรงดันลม", "สื่อสารให้ชัดเจนก่อนเริ่มงาน ว่าใครอยู่ตำแหน่งไหน ใช้สัญญาณอะไร", "ให้หัวหน้างานอนุมัติลุยหน้างานไปก่อน แล้วค่อยแจ้ง จป. ทราบหลังซ่อมเสร็จ"], ans: 3 },
+            { q: "ขั้นตอนเตรียมความพร้อม ข้อใด ไม่ใช่ สิ่งที่พนักงานต้องรู้เกี่ยวกับแหล่งพลังงาน?", o: ["แหล่งพลังงานนั้นเป็นแหล่งพลังงานชนิดใด?", "อันตรายจากแหล่งพลังงานที่จะต้องถูกควบคุมมีอะไรบ้าง?", "จะต้องควบคุมอันตรายนั้นอย่างไร?", "แหล่งพลังงานนั้นถูกเปิดใช้งานมาแล้วกี่ชั่วโมง?"], ans: 3 },
+            { q: "อุปกรณ์หลักที่ต้องใช้ควบคู่กันเสมอในทุกประเภทงานของระบบ LOTO คือข้อใด?", o: ["แม่กุญแจความปลอดภัย และ อุปกรณ์กั้นเขตอันตราย", "ป้ายเตือนอันตราย และ ใบอนุญาตทำงาน", "แม่กุญแจ และ ป้ายเตือนอันตราย", "สวิตช์ปิดฉุกเฉิน และ ป้ายเตือนอันตราย"], ans: 2 },
+            { q: "งานด่วนใต้เครนขัดข้อง หัวหน้าสั่งให้มุดไปเคลียร์ 'แค่ 1 นาที' ไม่ต้องทำ LOTO เพราะเรือรีบออก คุณจะทำอย่างไร?", o: ["รีบเข้าไปเคลียร์ให้เสร็จไวๆ แล้วใช้วิทยุสื่อสารคอยเช็กกับห้องคอนโทรลไว้", "วิ่งเข้าไปทำทันทีโดยพกแม่กุญแจติดตัวไปด้วย เผื่อมีคนเปิดระบบจะได้ตะโกนบอก", "ปฏิเสธทันที และยืนยันต้องทำ LOTO ให้เสร็จ เพราะไม่มีเรือลำไหนสำคัญกว่าชีวิตคน", "ยอมเข้าไปเคลียร์ให้ แต่ต้องใส่หมวกเซฟตี้และสายรัดตัวให้แน่นหนากว่าเดิม"], ans: 2 }
         ];
 
-        let currentRoom = "";
-        let playerKey = "";
-        let isHost = false;
-        let hostTimerObj = null;
-        let globalTimer = 15;
-        let localHasAnswered = false;
-        let localScore = 0;
-        let currentQIdx = -1;
-        let hostTotalPlayers = 0;
-        let hostAnsweredCount = 0;
-        let isQuestionActive = false;
+        let currentRoom = ""; let playerKey = ""; let isHost = false;
+        let hostTimerObj = null; let globalTimer = 25; // อัปเดตเวลาเป็น 25 วิ
+        let localHasAnswered = false; let localScore = 0; let currentQIdx = -1;
+        let hostTotalPlayers = 0; let hostAnsweredCount = 0; let isQuestionActive = false;
 
         const currentWebUrl = window.location.href.split('?')[0];
 
@@ -226,18 +227,25 @@
             const qrUrl = encodeURIComponent(`${currentWebUrl}?pin=${currentRoom}`);
             document.getElementById('host-qrcode-container').innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${qrUrl}" alt="QR" class="w-[150px] h-[150px]"/>`;
 
-            db.ref(`rooms/${currentRoom}`).set({ status: 'lobby', qIndex: -1, timer: 15 });
+            db.ref(`rooms/${currentRoom}`).set({ status: 'lobby', qIndex: -1, timer: 25 });
 
             db.ref(`rooms/${currentRoom}/players`).on('value', snap => {
                 const players = snap.val();
                 if(players) {
-                    hostTotalPlayers = Object.keys(players).length;
+                    const newTotal = Object.keys(players).length;
+                    
+                    // เล่นเสียงติ๊ง! ถ้ายอดคนเข้าห้องเพิ่มขึ้น (เฉพาะในหน้า Lobby)
+                    if (newTotal > hostTotalPlayers && !isQuestionActive && currentQIdx === -1) {
+                        sfxJoin.currentTime = 0; sfxJoin.play().catch(e => console.log('Audio play error'));
+                    }
+                    
+                    hostTotalPlayers = newTotal;
                     document.getElementById('host-player-count').innerText = hostTotalPlayers;
                     
                     const grid = document.getElementById('host-players-grid');
                     grid.innerHTML = '';
-                    
                     hostAnsweredCount = 0;
+                    
                     Object.values(players).forEach(p => {
                         grid.innerHTML += `<div class="bg-white py-2 px-3 comic-border shadow-sm">${p.name}</div>`;
                         if(p.answered === currentQIdx) hostAnsweredCount++;
@@ -285,16 +293,22 @@
             document.getElementById('btn-show-rank').classList.remove('hidden');
             document.getElementById('btn-next-q').classList.add('hidden');
 
-            db.ref(`rooms/${currentRoom}`).update({ status: 'playing', qIndex: idx, timer: 15 });
+            db.ref(`rooms/${currentRoom}`).update({ status: 'playing', qIndex: idx, timer: 25 });
             changeView('host-game');
 
-            globalTimer = 15;
+            globalTimer = 25;
             document.getElementById('host-timer').innerText = globalTimer;
             clearInterval(hostTimerObj);
+            
             hostTimerObj = setInterval(() => {
                 globalTimer--;
                 db.ref(`rooms/${currentRoom}`).update({ timer: globalTimer });
                 document.getElementById('host-timer').innerText = globalTimer;
+                
+                // เล่นเสียงติ๊กต็อก 5 วินาทีสุดท้าย บนหน้าจอ Host
+                if(globalTimer <= 5 && globalTimer > 0) {
+                    sfxTick.currentTime = 0; sfxTick.play().catch(e => console.log('Audio error'));
+                }
                 
                 if(globalTimer <= 0) {
                     clearInterval(hostTimerObj);
@@ -306,7 +320,7 @@
         function endQuestion(idx) {
             isQuestionActive = false; 
             const correctText = questionsList[idx].o[questionsList[idx].ans];
-            document.getElementById('host-correct-ans-title').innerHTML = `<span class="text-2xl mt-2 block text-black">คำตอบที่ถูกคือ: <br><span class="text-4xl text-green-600">${correctText}</span></span>`;
+            document.getElementById('host-correct-ans-title').innerHTML = `<span class="text-2xl mt-2 block text-black">คำตอบที่ถูกคือ: <br><span class="text-3xl md:text-4xl text-green-600 mt-2 block">${correctText}</span></span>`;
             db.ref(`rooms/${currentRoom}`).update({ status: 'answer' });
             changeView('host-answer');
         }
@@ -358,14 +372,17 @@
                 const ref = db.ref(`rooms/${currentRoom}/players`).push();
                 playerKey = ref.key;
                 
-                // 🔥 เพิ่ม .catch() ดัก Error ป้องกันคนหลงคิดว่าเข้าห้องได้ แต่ Database ไม่บันทึก
                 ref.set({ name: name, empId: id, score: 0, answered: -1 })
                     .then(() => {
+                        // ปลดล็อกการเล่นเสียงบนมือถือ (Browser ต้องกด 1 ครั้งก่อนถึงจะอนุญาตให้เล่นเสียง)
+                        sfxJoin.play().catch(e => console.log('Init audio'));
+                        sfxJoin.pause(); sfxJoin.currentTime = 0;
+                        
                         changeView('player-waiting');
                         listenToGame();
                     })
                     .catch((error) => {
-                        alert("⚠️ เซิร์ฟเวอร์ปฏิเสธการเข้าห้อง!\nกรุณาตรวจสอบว่าเปิด Rules ใน Firebase เป็น true แล้วหรือยัง\n\n(Error: " + error.message + ")");
+                        alert("⚠️ เซิร์ฟเวอร์ปฏิเสธการเข้าห้อง!\n" + error.message);
                     });
             });
         }
@@ -414,7 +431,8 @@
             let earned = 0;
 
             if(isCorrect) {
-                earned = Math.floor((globalTimer / 15) * 1000);
+                // คะแนนเต็ม 1000 หารด้วย 25 วินาที
+                earned = Math.floor((globalTimer / 25) * 1000);
                 if(earned < 500) earned = 500; 
                 localScore += earned;
             }
@@ -433,6 +451,15 @@
             const bg = document.getElementById('view-player-result');
             const title = document.getElementById('player-result-title');
             const pts = document.getElementById('player-result-points');
+
+            // เล่นเสียงประกอบตอนเฉลยบนมือถือพนักงาน
+            if(!isPreload) {
+                if(isCorrect) {
+                    sfxCorrect.currentTime = 0; sfxCorrect.play().catch(e => console.log('Audio error'));
+                } else {
+                    sfxWrong.currentTime = 0; sfxWrong.play().catch(e => console.log('Audio error'));
+                }
+            }
 
             if(isCorrect) {
                 bg.className = "hidden flex-1 flex flex-col items-center justify-center p-6 text-black text-center bg-green-400 comic-border comic-shadow";
