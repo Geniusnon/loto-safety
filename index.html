@@ -3,161 +3,165 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SAFETY TEST QUIZ - LOTO MASTER</title>
+    <title>SAFETY QUIZ - LOTO MASTER</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght=400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;800;900&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 
     <style>
-        body {
-            font-family: 'Kanit', sans-serif;
-            background-color: #f3f4f6;
-            background-image: radial-gradient(#000000 15%, transparent 15%);
-            background-size: 20px 20px;
-        }
+        body { font-family: 'Kanit', sans-serif; background-color: #f2f2f2; }
         .comic-border { border: 4px solid #000000; }
-        .comic-border-md { border: 3px solid #000000; }
         .comic-shadow { box-shadow: 6px 6px 0px 0px #000000; }
-        .comic-shadow-sm { box-shadow: 4px 4px 0px 0px #000000; }
-        .comic-btn:active { transform: translate(3px, 3px); box-shadow: 1px 1px 0px 0px #000000; }
+        .btn-active:active { transform: translate(4px, 4px); box-shadow: 2px 2px 0px 0px #000000; }
+        
+        /* Kahoot Style Colors */
+        .color-a { background-color: #e21b3c; color: white; }
+        .color-b { background-color: #1368ce; color: white; }
+        .color-c { background-color: #d89e00; color: white; }
+        .color-d { background-color: #26890c; color: white; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center p-4">
+<body class="min-h-screen flex flex-col">
 
-    <div class="w-full max-w-2xl mb-5 bg-red-600 text-white font-black text-center py-3 px-6 comic-border comic-shadow uppercase tracking-widest relative">
-        <span class="text-2xl md:text-3xl block">⚠️ SAFETY FIRST ⚠️</span>
-        <span id="network-status" class="text-xs text-yellow-300 font-bold tracking-normal block mt-1">กำลังตรวจสอบสถานะเครือข่าย...</span>
+    <div class="bg-white p-3 flex justify-between items-center shadow-md z-10 comic-border border-t-0 border-l-0 border-r-0">
+        <h1 class="text-xl md:text-2xl font-black text-slate-800">⚠️ LCB1 SAFETY QUIZ</h1>
+        <span id="network-status" class="text-xs font-bold text-gray-800 bg-yellow-300 border-2 border-black px-3 py-1 rounded-full">กำลังเชื่อมต่อฐานข้อมูล...</span>
     </div>
 
-    <div id="main-box" class="w-full max-w-2xl bg-yellow-400 comic-border p-6 comic-shadow relative">
-        
-        <div id="view-menu" class="block text-center py-2">
-            <h1 class="text-3xl font-black text-black mb-6 bg-cyan-400 inline-block px-5 py-2 comic-border-md comic-shadow-sm">
-                SAFETY TEST QUIZ
-            </h1>
-            <p class="text-lg font-bold text-black mb-5">กรุณาเลือกหัวข้อการทดสอบเพื่อเริ่มสร้างห้อง</p>
+    <div class="flex-1 flex flex-col relative w-full max-w-5xl mx-auto p-4 md:p-6">
+
+        <div id="view-role" class="flex-1 flex flex-col items-center justify-center">
+            <h2 class="text-3xl md:text-4xl font-black mb-8 text-black bg-white px-6 py-2 comic-border comic-shadow transform -rotate-1">เลือกโหมดการใช้งาน</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-2xl">
+                <button onclick="setupHostMode()" class="bg-purple-300 p-8 comic-border comic-shadow btn-active transition-all text-center">
+                    <div class="text-6xl mb-4">👨‍🏫</div>
+                    <h3 class="text-2xl font-black text-black">สร้างห้อง (GM / วิทยากร)</h3>
+                    <p class="text-slate-800 mt-2 font-bold">เปิดบนจอโปรเจกเตอร์เพื่อควบคุมเกม</p>
+                </button>
+                <button onclick="changeView('player-join')" class="bg-green-400 p-8 comic-border comic-shadow btn-active transition-all text-center">
+                    <div class="text-6xl mb-4">📱</div>
+                    <h3 class="text-2xl font-black text-black">เข้าร่วม (พนักงาน)</h3>
+                    <p class="text-slate-800 mt-2 font-bold">ใส่ PIN เพื่อตอบคำถามผ่านมือถือ</p>
+                </button>
+            </div>
+        </div>
+
+        <div id="view-host-lobby" class="hidden flex-1 flex flex-col">
+            <div class="bg-white comic-border comic-shadow p-6 md:p-8 flex flex-col md:flex-row items-center justify-around mb-8">
+                <div class="text-center md:text-left mb-6 md:mb-0">
+                    <p class="text-xl font-bold text-slate-600 mb-2">ให้ผู้เข้าอบรมสแกน QR Code หรือกรอกรหัส</p>
+                    <p class="text-2xl font-black text-black">GAME PIN:</p>
+                    <h1 id="host-pin-display" class="text-6xl md:text-8xl font-black text-purple-700 tracking-widest my-2">------</h1>
+                </div>
+                <div id="host-qrcode-container" class="bg-white p-3 border-4 border-black min-w-[160px] min-h-[160px] flex items-center justify-center">
+                    </div>
+            </div>
+
+            <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                <h2 class="text-2xl font-black bg-yellow-300 px-6 py-3 comic-border">พนักงานในห้อง: <span id="host-player-count">0</span> คน</h2>
+                <button onclick="hostChangeState('playing')" class="bg-blue-500 hover:bg-blue-400 text-white text-2xl font-black px-12 py-4 comic-border comic-shadow btn-active w-full md:w-auto">เริ่มเกม! 🚀</button>
+            </div>
+
+            <div id="host-players-grid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3 text-center font-bold text-lg">
+                </div>
+        </div>
+
+        <div id="view-host-game" class="hidden flex-1 flex flex-col">
+            <div class="flex justify-between items-center mb-4">
+                <span id="host-q-number" class="text-2xl font-black text-slate-800 bg-white px-4 py-1 comic-border">ข้อที่ 1</span>
+                <span id="host-answer-counter" class="text-xl font-black text-black bg-cyan-300 px-4 py-2 comic-border">ตอบแล้ว: 0 / 0 คน</span>
+                <div class="bg-red-500 text-white text-4xl font-black w-20 h-20 flex items-center justify-center rounded-full comic-border">
+                    <span id="host-timer">15</span>
+                </div>
+            </div>
+
+            <div class="bg-white comic-border comic-shadow p-6 mb-6 text-center min-h-[120px] flex items-center justify-center">
+                <h1 id="host-question-text" class="text-2xl md:text-4xl font-black text-slate-800 leading-relaxed">โจทย์คำถาม...</h1>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1">
+                <div class="color-a comic-border comic-shadow p-4 flex items-center"><span class="text-4xl mr-4">🔺</span><span id="host-opt-0" class="text-xl font-bold">A</span></div>
+                <div class="color-b comic-border comic-shadow p-4 flex items-center"><span class="text-4xl mr-4">🔷</span><span id="host-opt-1" class="text-xl font-bold">B</span></div>
+                <div class="color-c comic-border comic-shadow p-4 flex items-center"><span class="text-4xl mr-4">🟡</span><span id="host-opt-2" class="text-xl font-bold">C</span></div>
+                <div class="color-d comic-border comic-shadow p-4 flex items-center"><span class="text-4xl mr-4">🟩</span><span id="host-opt-3" class="text-xl font-bold">D</span></div>
+            </div>
+        </div>
+
+        <div id="view-host-answer" class="hidden flex-1 flex flex-col items-center justify-center">
+            <div class="bg-white comic-border comic-shadow p-8 text-center w-full max-w-3xl mb-8">
+                <h1 class="text-3xl font-black text-red-600 mb-4">หมดเวลา!</h1>
+                <p class="text-xl font-bold text-slate-600">คำตอบที่ถูกต้องคือ</p>
+                <h2 id="host-correct-ans-title" class="text-3xl font-black text-green-600 mt-2 p-4 bg-green-50 border-4 border-green-500 rounded-xl">...</h2>
+            </div>
             
-            <div class="space-y-4 text-left">
-                <button onclick="changeView('role')" class="w-full bg-white hover:bg-orange-50 p-5 comic-border-md comic-shadow-sm comic-btn flex justify-between items-center group transition-all">
-                    <div>
-                        <h3 class="text-xl font-black text-black">Lock out tag out (LOTO)</h3>
-                        <p class="text-sm text-slate-800 font-medium mt-1">ควิซจับเวลาสไตล์ Kahoot ชิงความเร็ว 7 ข้อ</p>
-                    </div>
-                    <span class="text-2xl group-hover:translate-x-1 transition-transform">🔒</span>
-                </button>
+            <div id="host-leaderboard" class="bg-orange-100 comic-border comic-shadow w-full max-w-3xl p-8 hidden mb-8">
+                <h2 class="text-3xl font-black text-center mb-6 text-orange-600">🏆 Top 3 Leaderboard 🏆</h2>
+                <div id="leaderboard-container" class="space-y-4"></div>
+            </div>
+
+            <div class="flex space-x-4 w-full max-w-3xl">
+                <button onclick="hostShowLeaderboard()" id="btn-show-rank" class="flex-1 bg-yellow-400 text-black text-2xl font-black py-4 comic-border comic-shadow btn-active">ดูอันดับคะแนน</button>
+                <button onclick="hostChangeState('next')" id="btn-next-q" class="hidden flex-1 bg-blue-500 text-white text-2xl font-black py-4 comic-border comic-shadow btn-active">ข้อต่อไป ➡️</button>
             </div>
         </div>
 
-        <div id="view-role" class="hidden text-center py-2">
-            <h2 class="text-2xl font-black text-black mb-6 bg-white inline-block px-5 py-1.5 comic-border-md">เลือกโหมดการใช้งาน</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <button onclick="setupHostMode()" class="bg-purple-400 hover:bg-purple-300 p-5 comic-border-md comic-shadow-sm comic-btn text-left flex flex-col justify-between h-40">
-                    <span class="text-3xl">👨‍🏫</span>
-                    <div>
-                        <span class="text-xl font-black block text-black">สร้างห้องทดสอบ</span>
-                        <span class="text-xs font-bold text-slate-900">สำหรับ จป. / วิทยากรผู้ควบคุมหน้าจอหลัก</span>
-                    </div>
-                </button>
-                <button onclick="changeView('join-form')" class="bg-green-400 hover:bg-green-300 p-5 comic-border-md comic-shadow-sm comic-btn text-left flex flex-col justify-between h-40">
-                    <span class="text-3xl">🙋‍♂️</span>
-                    <div>
-                        <span class="text-xl font-black block text-black">เข้าร่วมห้องทดสอบ</span>
-                        <span class="text-xs font-bold text-slate-900">สำหรับพนักงาน / ผู้เข้าอบรมเพื่อตอบควิซ</span>
-                    </div>
-                </button>
+        <div id="view-player-join" class="hidden flex-1 flex flex-col items-center justify-center">
+            <div class="bg-white p-6 comic-border comic-shadow w-full max-w-sm">
+                <h2 class="text-2xl font-black text-center mb-6">เข้าร่วมเกม</h2>
+                <input type="number" id="player-pin" placeholder="PIN 6 หลัก" class="w-full text-center p-3 text-xl font-black border-4 border-black mb-4 uppercase">
+                <input type="text" id="player-id" placeholder="รหัสพนักงาน" class="w-full text-center p-3 text-xl font-black border-4 border-black mb-4">
+                <input type="text" id="player-name" placeholder="ชื่อเล่น" class="w-full text-center p-3 text-xl font-black border-4 border-black mb-6">
+                <button onclick="playerJoin()" class="w-full bg-green-400 text-black font-black text-xl py-4 comic-border comic-shadow btn-active">เข้าสู่ระบบ 🏃‍♂️</button>
             </div>
-            <button onclick="changeView('menu')" class="mt-6 text-sm font-bold underline block mx-auto text-black">🔙 ย้อนกลับหน้าหลัก</button>
+            <button onclick="changeView('role')" class="mt-8 font-bold underline text-slate-600">ย้อนกลับหน้าหลัก</button>
         </div>
 
-        <div id="view-host" class="hidden py-2">
-            <div class="bg-purple-100 comic-border-md p-4 flex flex-col md:flex-row items-center justify-around comic-shadow-sm mb-5 gap-4">
-                <div class="text-center">
-                    <p class="text-sm font-bold text-slate-800 uppercase tracking-wider">รหัสเข้าห้องทดสอบ (PIN)</p>
-                    <h1 id="host-pin" class="text-5xl font-black text-purple-700 tracking-widest my-1">------</h1>
-                    <p class="text-xs font-bold text-red-600">หรือให้พนักงานสแกน QR Code เพื่อเข้าห้อง 📲</p>
+        <div id="view-player-waiting" class="hidden flex-1 flex flex-col items-center justify-center p-6 text-center">
+            <div class="bg-purple-300 comic-border comic-shadow p-8 max-w-md w-full">
+                <h1 class="text-3xl font-black text-black mb-4 animate-pulse">รอผู้ทดสอบอื่น...</h1>
+                <p class="text-lg font-bold text-slate-800">เมื่อวิทยากร (GM) กดเริ่มเกม คำถามและตัวเลือกจะแสดงขึ้นที่หน้าจอนี้อัตโนมัติ</p>
+                <div class="mt-6 text-6xl">⏳</div>
+            </div>
+        </div>
+
+        <div id="view-player-game" class="hidden flex-1 flex flex-col">
+            <div class="flex justify-between items-center mb-3">
+                <span id="player-q-number" class="text-sm font-black bg-white px-3 py-1 border-2 border-black">ข้อที่ 1</span>
+                <span id="player-timer-display" class="text-sm font-black text-red-600 bg-white px-3 py-1 border-2 border-black">⏱️ 15s</span>
+            </div>
+            
+            <div class="bg-white border-4 border-black p-4 mb-4 shadow-sm text-center">
+                <h1 id="player-question-text" class="text-xl font-black text-slate-800 leading-snug">โจทย์...</h1>
+            </div>
+
+            <div class="grid grid-cols-1 gap-3 flex-1 pb-4 relative">
+                <button onclick="playerSubmit(0)" class="color-a border-4 border-black shadow-sm btn-active flex items-center p-3 text-left">
+                    <span class="text-3xl mr-3">🔺</span><span id="player-opt-0" class="text-md font-bold leading-tight">A</span>
+                </button>
+                <button onclick="playerSubmit(1)" class="color-b border-4 border-black shadow-sm btn-active flex items-center p-3 text-left">
+                    <span class="text-3xl mr-3">🔷</span><span id="player-opt-1" class="text-md font-bold leading-tight">B</span>
+                </button>
+                <button onclick="playerSubmit(2)" class="color-c border-4 border-black shadow-sm btn-active flex items-center p-3 text-left">
+                    <span class="text-3xl mr-3">🟡</span><span id="player-opt-2" class="text-md font-bold leading-tight">C</span>
+                </button>
+                <button onclick="playerSubmit(3)" class="color-d border-4 border-black shadow-sm btn-active flex items-center p-3 text-left">
+                    <span class="text-3xl mr-3">🟩</span><span id="player-opt-3" class="text-md font-bold leading-tight">D</span>
+                </button>
+
+                <div id="player-wait-overlay" class="hidden absolute inset-0 bg-white/90 border-4 border-black flex flex-col items-center justify-center text-center p-4">
+                    <div class="text-5xl mb-2">🔒</div>
+                    <h2 class="text-2xl font-black text-red-600">บันทึกคำตอบแล้ว!</h2>
+                    <p class="text-md font-bold text-gray-800 mt-2">รอสัญญาณเฉลยบนกระดาน...</p>
                 </div>
-                <div id="host-qrcode-container" class="bg-white p-2 border-2 border-black flex items-center justify-center min-w-[130px] min-h-[130px]">
-                    <span class="text-xs text-gray-500 font-bold">กำลังเจนคิวอาร์...</span>
-                </div>
-            </div>
-
-            <div id="host-leaderboard-box" class="hidden bg-orange-100 comic-border-md p-4 comic-shadow-sm mb-5 text-center">
-                <h2 class="text-2xl font-black text-orange-600 mb-3">🏆 ตารางผู้นำ 3 อันดับแรก 🏆</h2>
-                <div id="leaderboard-list" class="space-y-2 max-w-md mx-auto"></div>
-            </div>
-
-            <div class="bg-white comic-border-md p-4 comic-shadow-sm mb-5">
-                <div class="flex justify-between items-center border-b-2 border-black pb-2 mb-3">
-                    <h3 class="font-black text-black text-lg">พนักงานในห้อง (<span id="count-players">0</span> คน)</h3>
-                    <div class="flex items-center space-x-2">
-                        <span id="host-timer-display" class="hidden bg-red-600 text-white px-3 py-0.5 rounded font-black text-sm animate-pulse">เวลา: 15s</span>
-                        <span id="host-status-badge" class="bg-blue-500 text-white text-xs font-black px-2.5 py-0.5 comic-border-md">รอดำเนินการ</span>
-                    </div>
-                </div>
-                <div id="host-player-grid" class="grid grid-cols-2 md:grid-cols-3 gap-3 max-h-36 overflow-y-auto p-1 text-sm font-medium text-slate-800"></div>
-            </div>
-
-            <div class="flex space-x-3">
-                <button onclick="hostControlGame('start')" id="btn-start-game" class="flex-1 bg-green-400 hover:bg-green-300 text-black font-black text-lg py-3 comic-border-md comic-shadow-sm comic-btn">
-                    เริ่มเกมพร้อมกัน! 🚀
-                </button>
-                <button onclick="hostControlGame('next')" id="btn-next-question" class="flex-1 hidden bg-cyan-400 hover:bg-cyan-300 text-black font-black text-lg py-3 comic-border-md comic-shadow-sm comic-btn">
-                    เปิดโจทย์ข้อต่อไป ➡️
-                </button>
             </div>
         </div>
 
-        <div id="view-join-form" class="hidden text-center py-2">
-            <h2 class="text-2xl font-black text-black mb-5">กรอกข้อมูลเข้าร่วม</h2>
-            <div class="space-y-4 max-w-xs mx-auto">
-                <input type="text" id="player-pin-input" placeholder="รหัสห้อง PIN 6 หลัก" class="w-full text-center p-2.5 comic-border-md text-xl font-black placeholder-gray-500 uppercase comic-shadow-sm" maxlength="6">
-                <input type="text" id="player-id-input" placeholder="รหัสพนักงาน (เช่น 500xxx)" class="w-full text-center p-2.5 comic-border-md text-xl font-black placeholder-gray-500 comic-shadow-sm" maxlength="10">
-                <input type="text" id="player-name-input" placeholder="ระบุชื่อเล่นของคุณ" class="w-full text-center p-2.5 comic-border-md text-xl font-black placeholder-gray-500 comic-shadow-sm" maxlength="12">
-                
-                <button onclick="joinRoomAsPlayer()" class="w-full bg-green-400 hover:bg-green-300 text-black font-black text-lg py-3 comic-border-md comic-shadow-sm comic-btn">
-                    เข้าห้องทดสอบ 🏃‍♂️💨
-                </button>
-            </div>
-            <button onclick="changeView('role')" class="mt-6 text-sm font-bold underline block mx-auto text-black">ย้อนกลับ</button>
-        </div>
-
-        <div id="view-quiz" class="hidden">
-            <div class="w-full bg-white comic-border-md h-7 mb-5 relative flex items-center justify-between px-3">
-                <div id="quiz-progress" class="absolute left-0 top-0 bg-cyan-400 h-full border-r-2 border-black transition-all duration-300" style="width: 0%; z-index: 1;"></div>
-                <span id="quiz-status-text" class="text-xs font-black text-black relative z-10">ข้อที่ 1 จาก 7 ข้อ</span>
-                <span id="player-timer" class="text-sm font-black text-red-600 bg-white px-2 border border-black rounded relative z-10">⏱️ 15s</span>
-            </div>
-
-            <div class="bg-white comic-border-md p-4 mb-5 comic-shadow-sm relative">
-                <span class="absolute -top-3.5 left-4 bg-purple-600 text-white border border-black font-black px-2 py-0.5 text-xs">
-                    โจทย์ข้อที่ <span id="quiz-q-num">0</span>
-                </span>
-                <p id="quiz-q-text" class="text-xl md:text-2xl font-black text-black pt-2 leading-relaxed"></p>
-            </div>
-
-            <div id="quiz-options-box" class="space-y-3.5"></div>
-
-            <div id="quiz-wait-overlay" class="hidden text-center py-8 bg-white comic-border-md comic-shadow-sm">
-                <div class="text-4xl animate-bounce mb-2">🔒</div>
-                <p class="text-xl font-black text-red-600">ส่งคำตอบเรียบร้อย!</p>
-                <p class="text-sm font-bold text-gray-700 mt-1">ยิงเร็วได้แต้มเยอะ! รอวิทยากรโชว์คะแนน Top 3 บนจอใหญ่นะครับ...</p>
-            </div>
-        </div>
-
-        <div id="view-finish" class="hidden text-center py-5">
-            <h1 class="text-3xl font-black text-black mb-5 bg-red-500 inline-block px-5 py-1.5 comic-border-md comic-shadow-sm">
-                สิ้นสุดการทดสอบ!
-            </h1>
-            <p class="text-lg font-bold text-black my-1">คะแนนสะสมรวมความเร็วของคุณคือ</p>
-            <div class="bg-white comic-border-md inline-block px-10 py-4 rounded-full text-5xl font-black text-purple-600 comic-shadow-sm my-3">
-                <span id="player-final-score">0</span> คะแนน
-            </div>
-            <p class="text-sm font-bold text-gray-800 px-4 mb-5">ขอบคุณที่ร่วมรักษามาตราฐาน LOTO และระบบความปลอดภัยในพื้นที่ท่าเรือครับ!</p>
-            <button onclick="location.reload()" class="bg-cyan-400 hover:bg-cyan-300 text-black font-black text-md py-3 px-8 comic-border-md comic-shadow-sm comic-btn">
-                กลับหน้าหลัก 🏠
-            </button>
+        <div id="view-player-result" class="hidden flex-1 flex flex-col items-center justify-center p-6 text-white text-center comic-border comic-shadow">
+            <h1 id="player-result-title" class="text-5xl font-black mb-2">...</h1>
+            <p id="player-result-points" class="text-2xl font-bold bg-black/30 px-6 py-2 rounded-full mt-4 border-2 border-white"></p>
+            <p class="text-lg font-bold mt-8">รอหน้าจอหลักเพื่อไปข้อถัดไป...</p>
         </div>
 
     </div>
@@ -174,214 +178,272 @@
             measurementId: "G-TPMQYV9465"
         };
 
-        let isOnline = false; let db = null;
+        let db = null;
         try {
-            if (firebaseConfig.apiKey) {
-                firebase.initializeApp(firebaseConfig); db = firebase.database(); isOnline = true;
-                document.getElementById('network-status').innerText = "🔴 ระบบออนไลน์ Kahoot Mode เชื่อมต่อสำเร็จ";
-                document.getElementById('network-status').className = "text-xs text-green-300 font-bold tracking-normal block mt-1";
-            }
-        } catch (e) { document.getElementById('network-status').innerText = "โหมดทดสอบภายใน (Offline Mode)"; }
+            firebase.initializeApp(firebaseConfig);
+            db = firebase.database();
+            document.getElementById('network-status').innerText = "🟢 ออนไลน์";
+            document.getElementById('network-status').className = "text-xs font-bold text-green-800 bg-green-300 border-2 border-black px-3 py-1 rounded-full";
+        } catch (e) {
+            alert("Firebase Error: ไม่สามารถเชื่อมต่อฐานข้อมูลได้");
+        }
 
+        // ตัดข้อ 5 และ 6 ออก เหลือ 5 ข้อเน้นๆ
         const questionsList = [
-            { q: "ข้อใด ไม่ใช่ ขั้นตอน LOTO ที่ถูกต้อง?", o: ["ควบคุมพลังงานสะสม", "ตรวจสอบว่าปลอดภัยหรือไม่", "ปิดเครื่องจักรหรืออุปกรณ์", "แขวนป้ายเตือนไว้หน้าห้องควบคุมโดยไม่ล็อกจุดตัดแยก"], ans: 3 },
-            { q: "งานท่าเรือที่ทำ LOTO ได้ไม่ครบถ้วน (เช่น ต้องเปิดเครื่องทดสอบ) ข้อใด ไม่ใช่ สิ่งที่ควรทำ?", o: ["จัดให้มีผู้ควบคุมงาน ทำหน้าที่สั่งเริ่ม-หยุด และมอบหมายบทบาทให้แต่ละคนชัดเจน", "ป้องกันพลังงานบางส่วนเท่าที่ทำได้ เช่น ใส่ยางกันล้อไหล หรือลดแรงดันลม", "สื่อสารให้ชัดเจนก่อนเริ่มงาน ว่าใครอยู่ตำแหน่งไหน ใช้สัญญาณอะไร", "ให้หัวหน้างานอนุมัติลุยหน้างานไปก่อน แล้วค่อยแจ้ง จป. ทราบหลังซ่อมเสร็จ"], ans: 3 },
-            { q: "ขั้นตอนเตรียมความพร้อม ข้อใด ไม่ใช่ สิ่งที่พนักงานต้องรู้เกี่ยวกับแหล่งพลังงาน?", o: ["แหล่งพลังงานนั้นเป็นแหล่งพลังงานชนิดใด?", "อันตรายจากแหล่งพลังงานที่จะต้องถูกควบคุมมีอะไรบ้าง?", "จะต้องควบคุมอันตรายนั้นอย่างไร?", "แหล่งพลังงานนั้นถูกเปิดใช้งานมาแล้วกี่ชั่วโมง?"], ans: 3 },
-            { q: "อุปกรณ์หลักที่ต้องใช้ควบคู่กันเสมอในทุกประเภทงานของระบบ LOTO คือข้อใด?", o: ["แม่กุญแจความปลอดภัย และ อุปกรณ์กั้นเขตอันตราย", "ป้ายเตือนอันตราย และ ใบอนุญาตทำงาน", "แม่กุญแจ และ ป้ายเตือนอันตราย", "สวิตช์ปิดฉุกเฉิน และ ป้ายเตือนอันตราย"], ans: 2 },
-            { q: "ข้อใด ไม่ใช่ มาตรฐานข้อกำหนดของอุปกรณ์ LOTO?", o: ["ต้องแข็งแรงพอที่จะป้องกันการหลุดออกโดยไม่ตั้งใจ", "ป้ายที่ทนทานต่อสภาพอากาศที่อาจเปียกชื้น", "มีข้อความประกอบบนป้าย เช่น ห้ามเปิด ห้ามปิด เป็นต้น", "ป้ายเตือนต้องใช้วัสดุสะท้อนแสงไฟระดับเดียวกับป้ายจราจรในท่าเรือ"], ans: 3 },
-            { q: "ตามมาตรฐาน LOTO ข้อใด ไม่ใช่ อุปกรณ์ตัดแยกพลังงานที่อนุญาตให้ใช้ล็อก?", o: ["วาล์วสลักหรือวาล์วพวงมาลัยท่อส่ง", "เซอร์กิตเบรกเกอร์", "สวิตช์สับตอนหลัก", "รีโมทคอนโทรลหน้าเครื่องจักร"], ans: 3 },
-            { q: "งานด่วนใต้เครนขัดข้อง หัวหน้าสั่งให้มุดไปเคลียร์ 'แค่ 1 นาที' ไม่ต้องทำ LOTO เพราะเรือรีบออก คุณจะทำอย่างไร?", o: ["รีบเข้าไปเคลียร์ให้เสร็จไวๆ แล้วใช้วิทยุสื่อสารคอยเช็กกับห้องคอนโทรลไว้", "วิ่งเข้าไปทำทันทีโดยพกแม่กุญแจติดตัวไปด้วย เผื่อมีคนเปิดระบบจะได้ตะโกนบอก", "ปฏิเสธทันที และยืนยันต้องทำ LOTO ให้เสร็จ เพราะไม่มีเรือลำไหนสำคัญกว่าชีวิตคน", "ยอมเข้าไปเคลียร์ให้ แต่ต้องใส่หมวกเซฟตี้และสายรัดตัวให้แน่นหนากว่าเดิม"], ans: 2 }
+            { q: "ข้อใด ไม่ใช่ ขั้นตอน LOTO ที่ถูกต้อง?", o: ["ควบคุมพลังงานสะสม", "ตรวจสอบว่าปลอดภัยหรือไม่", "ปิดเครื่องจักรหรืออุปกรณ์", "แขวนป้ายเตือนโดยไม่ล็อกจุดตัดแยก"], ans: 3 },
+            { q: "งานที่ทำ LOTO ไม่ครบถ้วน ข้อใด ไม่ใช่ สิ่งที่ควรทำ?", o: ["จัดให้มีผู้ควบคุมงาน", "ป้องกันพลังงานบางส่วนเท่าที่ทำได้", "สื่อสารให้ชัดเจนก่อนเริ่มงาน", "ให้หัวหน้าอนุมัติลุยก่อน แล้วค่อยแจ้ง จป."], ans: 3 },
+            { q: "ขั้นตอนเตรียมความพร้อม ข้อใด ไม่ใช่ สิ่งที่ต้องรู้?", o: ["แหล่งพลังงานเป็นชนิดใด?", "อันตรายจากแหล่งพลังงานมีอะไรบ้าง?", "จะต้องควบคุมอันตรายนั้นอย่างไร?", "เปิดใช้งานมาแล้วกี่ชั่วโมง?"], ans: 3 },
+            { q: "อุปกรณ์หลักที่ต้องใช้คู่กันเสมอใน LOTO คือข้อใด?", o: ["แม่กุญแจ และ อุปกรณ์กั้นเขต", "ป้ายเตือน และ ใบอนุญาตทำงาน", "แม่กุญแจ และ ป้ายเตือนอันตราย", "สวิตช์ปิดฉุกเฉิน และ ป้ายเตือน"], ans: 2 },
+            { q: "งานด่วน 1 นาที หัวหน้าสั่งไม่ต้อง LOTO คุณจะทำอย่างไร?", o: ["รีบเข้าไปเคลียร์ไวๆ", "วิ่งไปทำและพกกุญแจติดตัว", "ปฏิเสธทันที และยืนยันต้องทำ LOTO", "ยอมทำแต่ใส่ PPE ให้ครบ"], ans: 2 }
         ];
 
-        let roomPin = "123456"; let playerRefKey = null; let currentQuestionGlobalIdx = -1;
-        let localPlayerScore = 0; let secondsLeft = 15; let timerInterval = null;
+        let currentRoom = "";
+        let playerKey = "";
+        let isHost = false;
+        let hostTimerObj = null;
+        let globalTimer = 15;
+        let localHasAnswered = false;
+        let localScore = 0;
+        let currentQIdx = -1;
+        let hostTotalPlayers = 0;
+        let hostAnsweredCount = 0;
+        let isQuestionActive = false;
 
         const currentWebUrl = window.location.href.split('?')[0];
 
         function changeView(viewId) {
-            ['menu', 'role', 'host', 'join-form', 'quiz', 'finish'].forEach(id => {
-                document.getElementById(`view-${id}`).classList.add('hidden');
-            });
+            const views = ['role', 'host-lobby', 'host-game', 'host-answer', 'player-join', 'player-waiting', 'player-game', 'player-result'];
+            views.forEach(id => document.getElementById(`view-${id}`).classList.add('hidden'));
             document.getElementById(`view-${viewId}`).classList.remove('hidden');
         }
 
-        // 👨‍🏫 HOST ENGINE
+        // ==========================================
+        // 👨‍🏫 HOST ENGINE 
+        // ==========================================
         function setupHostMode() {
-            if (isOnline) {
-                roomPin = Math.floor(100000 + Math.random() * 900000).toString();
-                db.ref('rooms/' + roomPin).set({ status: 'waiting', currentQuestion: -1, timer: 15 });
-                db.ref('rooms/' + roomPin + '/players').on('value', (snapshot) => {
-                    renderHostPlayers(snapshot.val());
-                });
-            } else { roomPin = "111111"; }
+            isHost = true;
+            currentRoom = Math.floor(100000 + Math.random() * 900000).toString();
+            document.getElementById('host-pin-display').innerText = currentRoom;
             
-            document.getElementById('host-pin').innerText = roomPin;
-            
-            // 🔥 วิธีใหม่: เจนรูปคิวอาร์โค้ดผ่าน API สากลตรงๆ ไม่พึ่งสคริปต์โหลดนอก ขึ้นรูปภาพได้แน่นอน 100%
-            const targetJoinUrl = encodeURIComponent(`${currentWebUrl}?pin=${roomPin}`);
-            const qrContainer = document.getElementById('host-qrcode-container');
-            qrContainer.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${targetJoinUrl}" alt="QR Code" class="w-[120px] h-[120px]"/>`;
+            const qrUrl = encodeURIComponent(`${currentWebUrl}?pin=${currentRoom}`);
+            document.getElementById('host-qrcode-container').innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${qrUrl}" alt="QR" class="w-[150px] h-[150px]"/>`;
 
-            changeView('host');
-        }
+            db.ref(`rooms/${currentRoom}`).set({ status: 'lobby', qIndex: -1, timer: 15 });
 
-        function renderHostPlayers(playersData) {
-            const grid = document.getElementById('host-player-grid'); grid.innerHTML = '';
-            if (playersData) {
-                const keys = Object.keys(playersData);
-                document.getElementById('count-players').innerText = keys.length;
-                keys.forEach(key => {
-                    const p = playersData[key];
-                    const card = document.createElement('div');
-                    card.className = "bg-white border-2 border-black p-2 comic-shadow-sm flex justify-between items-center bg-teal-50";
-                    card.innerHTML = `<span>👤 ${p.name}</span><span class="bg-black text-yellow-300 px-2 py-0.5 rounded font-black text-xs">${p.score} แต้ม</span>`;
-                    grid.appendChild(card);
-                });
-                calculateLeaderboard(playersData);
-            } else { grid.innerHTML = '<p class="text-center font-bold text-gray-400 col-span-full py-4">⏳ กำลังรอพนักงานสแกน QR Code เข้าห้อง...</p>'; }
-        }
+            db.ref(`rooms/${currentRoom}/players`).on('value', snap => {
+                const players = snap.val();
+                if(players) {
+                    hostTotalPlayers = Object.keys(players).length;
+                    document.getElementById('host-player-count').innerText = hostTotalPlayers;
+                    
+                    const grid = document.getElementById('host-players-grid');
+                    grid.innerHTML = '';
+                    
+                    hostAnsweredCount = 0;
+                    Object.values(players).forEach(p => {
+                        grid.innerHTML += `<div class="bg-white py-2 px-3 comic-border shadow-sm">${p.name}</div>`;
+                        if(p.answered === currentQIdx) hostAnsweredCount++;
+                    });
 
-        function calculateLeaderboard(playersData) {
-            const list = Object.values(playersData).sort((a, b) => b.score - a.score).slice(0, 3);
-            const container = document.getElementById('leaderboard-list'); container.innerHTML = '';
-            const medals = ['🥇', '🥈', '🥉'];
-            list.forEach((p, idx) => {
-                const div = document.createElement('div');
-                div.className = "bg-white border-2 border-black p-2 flex justify-between font-black text-lg text-slate-900 rounded";
-                div.innerHTML = `<span>${medals[idx]} อันดับที่ ${idx+1}: ${p.name}</span><span class="text-purple-700">${p.score} แต้ม</span>`;
-                container.appendChild(div);
+                    document.getElementById('host-answer-counter').innerText = `ตอบแล้ว: ${hostAnsweredCount} / ${hostTotalPlayers} คน`;
+
+                    if (isQuestionActive && hostTotalPlayers > 0 && hostAnsweredCount >= hostTotalPlayers) {
+                        clearInterval(hostTimerObj); 
+                        endQuestion(currentQIdx);    
+                    }
+                }
             });
+
+            changeView('host-lobby');
         }
 
-        function startHostTimer() {
-            secondsLeft = 15;
-            document.getElementById('host-timer-display').classList.remove('hidden');
-            clearInterval(timerInterval);
-            timerInterval = setInterval(() => {
-                secondsLeft--;
-                if(isOnline) db.ref('rooms/' + roomPin).update({ timer: secondsLeft });
-                document.getElementById('host-timer-display').innerText = `เวลา: ${secondsLeft}s`;
-                if(secondsLeft <= 0) {
-                    clearInterval(timerInterval);
-                    document.getElementById('host-leaderboard-box').classList.remove('hidden');
+        function hostChangeState(newState) {
+            if(newState === 'playing') {
+                currentQIdx = 0;
+                startQuestion(currentQIdx);
+            } else if (newState === 'next') {
+                currentQIdx++;
+                if (currentQIdx < questionsList.length) {
+                    startQuestion(currentQIdx);
+                } else {
+                    db.ref(`rooms/${currentRoom}`).update({ status: 'finished' });
+                    document.getElementById('host-correct-ans-title').innerText = "🏁 จบการทดสอบ 🏁";
+                    document.getElementById('btn-next-q').classList.add('hidden');
+                }
+            }
+        }
+
+        function startQuestion(idx) {
+            isQuestionActive = true;
+            const q = questionsList[idx];
+            document.getElementById('host-q-number').innerText = `ข้อที่ ${idx + 1}`;
+            document.getElementById('host-question-text').innerText = q.q;
+            document.getElementById('host-opt-0').innerText = q.o[0];
+            document.getElementById('host-opt-1').innerText = q.o[1];
+            document.getElementById('host-opt-2').innerText = q.o[2];
+            document.getElementById('host-opt-3').innerText = q.o[3];
+            
+            document.getElementById('host-leaderboard').classList.add('hidden');
+            document.getElementById('btn-show-rank').classList.remove('hidden');
+            document.getElementById('btn-next-q').classList.add('hidden');
+
+            db.ref(`rooms/${currentRoom}`).update({ status: 'playing', qIndex: idx, timer: 15 });
+            changeView('host-game');
+
+            globalTimer = 15;
+            document.getElementById('host-timer').innerText = globalTimer;
+            clearInterval(hostTimerObj);
+            hostTimerObj = setInterval(() => {
+                globalTimer--;
+                db.ref(`rooms/${currentRoom}`).update({ timer: globalTimer });
+                document.getElementById('host-timer').innerText = globalTimer;
+                
+                if(globalTimer <= 0) {
+                    clearInterval(hostTimerObj);
+                    endQuestion(idx);
                 }
             }, 1000);
         }
 
-        function hostControlGame(action) {
-            if (action === 'start') {
-                document.getElementById('btn-start-game').classList.add('hidden');
-                document.getElementById('btn-next-question').classList.remove('hidden');
-                document.getElementById('host-status-badge').innerText = "ข้อที่ 1";
-                startHostTimer();
-                if (isOnline) db.ref('rooms/' + roomPin).update({ status: 'playing', currentQuestion: 0 });
-            } else if (action === 'next') {
-                document.getElementById('host-leaderboard-box').classList.add('hidden');
-                db.ref('rooms/' + roomPin + '/currentQuestion').once('value', (snapshot) => {
-                    let nextIdx = snapshot.val() + 1;
-                    if (nextIdx < questionsList.length) {
-                        document.getElementById('host-status-badge').innerText = `ข้อที่ ${nextIdx + 1}`;
-                        startHostTimer();
-                        db.ref('rooms/' + roomPin).update({ currentQuestion: nextIdx, timer: 15 });
-                    } else {
-                        db.ref('rooms/' + roomPin).update({ status: 'finished' });
-                        document.getElementById('btn-next-question').innerText = "🏁 จบคลาสทดสอบ";
-                    }
-                });
-            }
+        function endQuestion(idx) {
+            isQuestionActive = false; 
+            const correctText = questionsList[idx].o[questionsList[idx].ans];
+            document.getElementById('host-correct-ans-title').innerHTML = `<span class="text-2xl mt-2 block text-black">คำตอบที่ถูกคือ: <br><span class="text-4xl text-green-600">${correctText}</span></span>`;
+            db.ref(`rooms/${currentRoom}`).update({ status: 'answer' });
+            changeView('host-answer');
         }
 
+        function hostShowLeaderboard() {
+            document.getElementById('btn-show-rank').classList.add('hidden');
+            document.getElementById('btn-next-q').classList.remove('hidden');
+            document.getElementById('host-leaderboard').classList.remove('hidden');
+
+            db.ref(`rooms/${currentRoom}/players`).once('value', snap => {
+                const players = snap.val();
+                const container = document.getElementById('leaderboard-container');
+                container.innerHTML = '';
+                if(players) {
+                    const sorted = Object.values(players).sort((a,b) => b.score - a.score).slice(0,3);
+                    const medals = ['🥇', '🥈', '🥉'];
+                    sorted.forEach((p, i) => {
+                        container.innerHTML += `<div class="bg-white border-2 border-black p-4 flex justify-between text-xl md:text-2xl font-black">
+                            <span>${medals[i]} ${p.name}</span> <span class="text-purple-700">${p.score} pt</span>
+                        </div>`;
+                    });
+                }
+            });
+        }
+
+        // ==========================================
         // 🙋‍♂️ PLAYER ENGINE
-        function checkUrlParams() {
+        // ==========================================
+        function checkAutoJoin() {
             const urlParams = new URLSearchParams(window.location.search);
-            const pinParam = urlParams.get('pin');
-            if(pinParam) {
-                document.getElementById('player-pin-input').value = pinParam;
-                changeView('join-form');
+            const pin = urlParams.get('pin');
+            if(pin) {
+                document.getElementById('player-pin').value = pin;
+                changeView('player-join');
             }
         }
 
-        function joinRoomAsPlayer() {
-            const inputPin = document.getElementById('player-pin-input').value.trim();
-            const inputId = document.getElementById('player-id-input').value.trim();
-            const inputName = document.getElementById('player-name-input').value.trim();
+        function playerJoin() {
+            const pin = document.getElementById('player-pin').value.trim();
+            const id = document.getElementById('player-id').value.trim();
+            const name = document.getElementById('player-name').value.trim();
             
-            if (!inputPin || !inputId || !inputName) { alert("กรุณากรอกข้อมูลให้ครบถ้วนทั้ง 3 ช่องครับพี่!"); return; }
-            
-            if (isOnline) {
-                roomPin = inputPin;
-                db.ref('rooms/' + roomPin).once('value', (snapshot) => {
-                    if (!snapshot.exists()) { alert("ไม่พบรหัสห้องนี้ในระบบ!"); return; }
-                    const ref = db.ref('rooms/' + roomPin + '/players').push();
-                    playerRefKey = ref.key;
-                    ref.set({ name: inputName, empId: inputId, score: 0 });
-                    changeView('quiz');
-                    listenToRoomUpdates();
-                });
-            } else {
-                changeView('quiz');
-                renderQuestionToPlayerView(0);
-            }
-        }
+            if(!pin || !id || !name) { alert("กรุณากรอกข้อมูลให้ครบถ้วนครับ!"); return; }
 
-        function listenToRoomUpdates() {
-            db.ref('rooms/' + roomPin).on('value', (snapshot) => {
-                const room = snapshot.val(); if (!room) return;
+            currentRoom = pin;
+            db.ref(`rooms/${currentRoom}`).once('value', snap => {
+                if(!snap.exists()) { alert("ไม่พบรหัสห้องนี้ กรุณาเช็กหน้าจอหลักอีกครั้งครับ"); return; }
                 
-                document.getElementById('player-timer').innerText = `⏱️ ${room.timer}s`;
-                secondsLeft = room.timer;
+                const ref = db.ref(`rooms/${currentRoom}/players`).push();
+                playerKey = ref.key;
+                ref.set({ name: name, empId: id, score: 0, answered: -1 });
+                
+                changeView('player-waiting');
+                listenToGame();
+            });
+        }
 
-                if(room.timer <= 0) {
-                    document.getElementById('quiz-options-box').classList.add('hidden');
-                    document.getElementById('quiz-wait-overlay').classList.remove('hidden');
-                }
+        function listenToGame() {
+            db.ref(`rooms/${currentRoom}`).on('value', snap => {
+                const room = snap.val(); if(!room) return;
+                
+                globalTimer = room.timer;
+                document.getElementById('player-timer-display').innerText = `⏱️ ${globalTimer}s`;
 
-                if (room.status === 'playing' && room.currentQuestion !== currentQuestionGlobalIdx) {
-                    currentQuestionGlobalIdx = room.currentQuestion;
-                    renderQuestionToPlayerView(currentQuestionGlobalIdx);
+                if (room.status === 'playing') {
+                    if (currentQIdx !== room.qIndex) {
+                        currentQIdx = room.qIndex;
+                        localHasAnswered = false; 
+                        
+                        const q = questionsList[currentQIdx];
+                        // อัปเดตข้อความจำนวนข้อให้ตรงกับความยาว Array จริง
+                        document.getElementById('player-q-number').innerText = `ข้อที่ ${currentQIdx + 1} จาก ${questionsList.length}`;
+                        document.getElementById('player-question-text').innerText = q.q;
+                        document.getElementById('player-opt-0').innerText = q.o[0];
+                        document.getElementById('player-opt-1').innerText = q.o[1];
+                        document.getElementById('player-opt-2').innerText = q.o[2];
+                        document.getElementById('player-opt-3').innerText = q.o[3];
+                        
+                        document.getElementById('player-wait-overlay').classList.add('hidden');
+                        changeView('player-game');
+                    }
+                } else if (room.status === 'answer') {
+                    if(!localHasAnswered) {
+                        showPlayerResult(false, 0); 
+                    }
                 } else if (room.status === 'finished') {
-                    document.getElementById('player-final-score').innerText = localPlayerScore;
-                    changeView('finish');
+                    document.getElementById('player-result-title').innerText = "เกมจบแล้ว!";
+                    document.getElementById('player-result-points').innerText = `คะแนนรวม: ${localScore}`;
+                    changeView('player-result');
                 }
             });
         }
 
-        function renderQuestionToPlayerView(idx) {
-            document.getElementById('quiz-wait-overlay').classList.add('hidden');
-            const optionsBox = document.getElementById('quiz-options-box');
-            optionsBox.classList.remove('hidden'); optionsBox.innerHTML = '';
+        function playerSubmit(answerIdx) {
+            if(localHasAnswered) return;
+            localHasAnswered = true;
 
-            const qData = questionsList[idx];
-            document.getElementById('quiz-q-num').innerText = idx + 1;
-            document.getElementById('quiz-q-text').innerText = qData.q;
-            
-            const prg = ((idx + 1) / questionsList.length) * 100;
-            document.getElementById('quiz-progress').style.width = `${prg}%`;
-            document.getElementById('quiz-status-text').innerText = `ข้อที่ ${idx + 1} จาก 7 ข้อ`;
+            const qData = questionsList[currentQIdx];
+            let isCorrect = (answerIdx === qData.ans);
+            let earned = 0;
 
-            const labels = ['A', 'B', 'C', 'D'];
-            qData.o.forEach((txt, i) => {
-                const btn = document.createElement('button');
-                btn.className = "w-full text-left bg-white text-black p-4 comic-border-md comic-shadow-sm comic-btn flex items-start space-x-3 hover:bg-orange-100 text-md";
-                btn.innerHTML = `<span class="bg-black text-yellow-300 px-2 py-0.5 rounded font-black text-xs border border-black">${labels[i]}</span><span class="flex-1 text-black font-semibold">${txt}</span>`;
-                btn.onclick = () => submitPlayerAnswer(i, qData.ans);
-                optionsBox.appendChild(btn);
-            });
-        }
-
-        function submitPlayerAnswer(chosenIdx, correctIdx) {
-            if (chosenIdx === correctIdx) {
-                let pointsEarned = Math.floor(500 + (secondsLeft / 15) * 500); 
-                localPlayerScore += pointsEarned;
-                if (isOnline && playerRefKey) {
-                    db.ref('rooms/' + roomPin + '/players/' + playerRefKey).update({ score: localPlayerScore });
-                }
+            if(isCorrect) {
+                earned = Math.floor((globalTimer / 15) * 1000);
+                if(earned < 500) earned = 500; 
+                localScore += earned;
             }
-            document.getElementById('quiz-options-box').classList.add('hidden');
-            document.getElementById('quiz-wait-overlay').classList.remove('hidden');
+
+            db.ref(`rooms/${currentRoom}/players/${playerKey}`).update({ 
+                score: localScore,
+                answered: currentQIdx 
+            });
+
+            document.getElementById('player-wait-overlay').classList.remove('hidden');
+            
+            showPlayerResult(isCorrect, earned, true);
         }
 
-        checkUrlParams();
+        function showPlayerResult(isCorrect, points, isPreload = false) {
+            const bg = document.getElementById('view-player-result');
+            const title = document.getElementById('player-result-title');
+            const pts = document.getElementById('player-result-points');
+
+            if(isCorrect) {
+                bg.className = "hidden flex-1 flex flex-col items-center justify-center p-6 text-black text-center bg-green-400 comic-border comic-shadow";
+                title.innerText = "ถูกต้อง! ✔️";
+                pts.innerText = `+${points} คะแนน`;
+            } else {
+                bg.className = "hidden flex-1 flex flex-col items-center justify-center p-6 text-white text-center bg-red-500 comic-border comic-shadow";
+                title.innerText = "ผิดคำตอบ ❌";
+                pts.innerText = "ไม่ได้คะแนนในข้อนี้";
+            }
+            if(!isPreload) changeView('player-result');
+        }
+
+        checkAutoJoin();
     </script>
 </body>
 </html>
