@@ -167,11 +167,15 @@
 
     <script>
         // --- 🎵 Sound Effects Setup ---
-        // ใช้ไฟล์เสียง Public ฟรีที่เสถียรสำหรับ UI
-        const sfxJoin = new Audio('https://assets.mixkit.co/active_storage/sfx/2870/2870-preview.mp3'); // ติ๊งตอนเข้าห้อง
-        const sfxTick = new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3'); // เสียงนาฬิกา
-        const sfxCorrect = new Audio('https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3'); // ถูกต้อง
-        const sfxWrong = new Audio('https://assets.mixkit.co/active_storage/sfx/3112/3112-preview.mp3'); // ผิดพลาด
+        const sfxJoin = new Audio('https://assets.mixkit.co/active_storage/sfx/2870/2870-preview.mp3'); 
+        const sfxTick = new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3'); 
+        const sfxCorrect = new Audio('https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3'); 
+        const sfxWrong = new Audio('https://assets.mixkit.co/active_storage/sfx/3112/3112-preview.mp3'); 
+        
+        // 🔥 เพิ่มเสียงดนตรีประกอบตอนเล่นเกม (Background Music)
+        const bgmGame = new Audio('https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3'); 
+        bgmGame.loop = true; // เล่นวนซ้ำ
+        bgmGame.volume = 0.3; // เปิดเสียงที่ 30% ให้เป็นบรรยากาศพื้นหลัง
 
         const firebaseConfig = {
             apiKey: "AIzaSyA-BNjTFR15PBWThOFyB10UcQR50jUvkTM",
@@ -194,7 +198,6 @@
             alert("Firebase Error: ไม่สามารถเชื่อมต่อฐานข้อมูลได้");
         }
 
-        // ข้อความโจทย์และช้อยส์แบบเต็ม 100% ไม่มีย่อ (5 ข้อ)
         const questionsList = [
             { q: "ข้อใด ไม่ใช่ ขั้นตอน LOTO ที่ถูกต้อง?", o: ["ควบคุมพลังงานสะสม", "ตรวจสอบว่าปลอดภัยหรือไม่", "ปิดเครื่องจักรหรืออุปกรณ์", "แขวนป้ายเตือนไว้หน้าห้องควบคุมโดยไม่ล็อกจุดตัดแยก"], ans: 3 },
             { q: "งานท่าเรือที่ทำ LOTO ได้ไม่ครบถ้วน (เช่น ต้องเปิดเครื่องทดสอบ) ข้อใด ไม่ใช่ สิ่งที่ควรทำ?", o: ["จัดให้มีผู้ควบคุมงาน ทำหน้าที่สั่งเริ่ม-หยุด และมอบหมายบทบาทให้แต่ละคนชัดเจน", "ป้องกันพลังงานบางส่วนเท่าที่ทำได้ เช่น ใส่ยางกันล้อไหล หรือลดแรงดันลม", "สื่อสารให้ชัดเจนก่อนเริ่มงาน ว่าใครอยู่ตำแหน่งไหน ใช้สัญญาณอะไร", "ให้หัวหน้างานอนุมัติลุยหน้างานไปก่อน แล้วค่อยแจ้ง จป. ทราบหลังซ่อมเสร็จ"], ans: 3 },
@@ -204,7 +207,7 @@
         ];
 
         let currentRoom = ""; let playerKey = ""; let isHost = false;
-        let hostTimerObj = null; let globalTimer = 25; // อัปเดตเวลาเป็น 25 วิ
+        let hostTimerObj = null; let globalTimer = 25; 
         let localHasAnswered = false; let localScore = 0; let currentQIdx = -1;
         let hostTotalPlayers = 0; let hostAnsweredCount = 0; let isQuestionActive = false;
 
@@ -234,9 +237,8 @@
                 if(players) {
                     const newTotal = Object.keys(players).length;
                     
-                    // เล่นเสียงติ๊ง! ถ้ายอดคนเข้าห้องเพิ่มขึ้น (เฉพาะในหน้า Lobby)
                     if (newTotal > hostTotalPlayers && !isQuestionActive && currentQIdx === -1) {
-                        sfxJoin.currentTime = 0; sfxJoin.play().catch(e => console.log('Audio play error'));
+                        sfxJoin.currentTime = 0; sfxJoin.play().catch(e => console.log('Audio error'));
                     }
                     
                     hostTotalPlayers = newTotal;
@@ -272,6 +274,7 @@
                 if (currentQIdx < questionsList.length) {
                     startQuestion(currentQIdx);
                 } else {
+                    bgmGame.pause(); // ปิดเสียงเมื่อจบเกม
                     db.ref(`rooms/${currentRoom}`).update({ status: 'finished' });
                     document.getElementById('host-correct-ans-title').innerText = "🏁 จบการทดสอบ 🏁";
                     document.getElementById('btn-next-q').classList.add('hidden');
@@ -296,6 +299,10 @@
             db.ref(`rooms/${currentRoom}`).update({ status: 'playing', qIndex: idx, timer: 25 });
             changeView('host-game');
 
+            // 🔥 เปิดเพลง Background Music บนจอ Host
+            bgmGame.currentTime = 0; 
+            bgmGame.play().catch(e => console.log('BGM Blocked by browser'));
+
             globalTimer = 25;
             document.getElementById('host-timer').innerText = globalTimer;
             clearInterval(hostTimerObj);
@@ -305,7 +312,6 @@
                 db.ref(`rooms/${currentRoom}`).update({ timer: globalTimer });
                 document.getElementById('host-timer').innerText = globalTimer;
                 
-                // เล่นเสียงติ๊กต็อก 5 วินาทีสุดท้าย บนหน้าจอ Host
                 if(globalTimer <= 5 && globalTimer > 0) {
                     sfxTick.currentTime = 0; sfxTick.play().catch(e => console.log('Audio error'));
                 }
@@ -319,6 +325,8 @@
 
         function endQuestion(idx) {
             isQuestionActive = false; 
+            bgmGame.pause(); // 🛑 ปิดเพลงเมื่อหมดเวลาหรือตอบครบ
+
             const correctText = questionsList[idx].o[questionsList[idx].ans];
             document.getElementById('host-correct-ans-title').innerHTML = `<span class="text-2xl mt-2 block text-black">คำตอบที่ถูกคือ: <br><span class="text-3xl md:text-4xl text-green-600 mt-2 block">${correctText}</span></span>`;
             db.ref(`rooms/${currentRoom}`).update({ status: 'answer' });
@@ -374,7 +382,6 @@
                 
                 ref.set({ name: name, empId: id, score: 0, answered: -1 })
                     .then(() => {
-                        // ปลดล็อกการเล่นเสียงบนมือถือ (Browser ต้องกด 1 ครั้งก่อนถึงจะอนุญาตให้เล่นเสียง)
                         sfxJoin.play().catch(e => console.log('Init audio'));
                         sfxJoin.pause(); sfxJoin.currentTime = 0;
                         
@@ -431,7 +438,6 @@
             let earned = 0;
 
             if(isCorrect) {
-                // คะแนนเต็ม 1000 หารด้วย 25 วินาที
                 earned = Math.floor((globalTimer / 25) * 1000);
                 if(earned < 500) earned = 500; 
                 localScore += earned;
@@ -452,7 +458,6 @@
             const title = document.getElementById('player-result-title');
             const pts = document.getElementById('player-result-points');
 
-            // เล่นเสียงประกอบตอนเฉลยบนมือถือพนักงาน
             if(!isPreload) {
                 if(isCorrect) {
                     sfxCorrect.currentTime = 0; sfxCorrect.play().catch(e => console.log('Audio error'));
