@@ -26,7 +26,7 @@
 
     <div class="bg-white p-3 flex justify-between items-center shadow-md z-10 comic-border border-t-0 border-l-0 border-r-0">
         <h1 class="text-xl md:text-2xl font-black text-slate-800">⚠️ LCB1 SAFETY QUIZ</h1>
-        <span id="network-status" class="text-xs font-bold text-gray-800 bg-yellow-300 border-2 border-black px-3 py-1 rounded-full">กำลังเชื่อมต่อฐานข้อมูล...</span>
+        <span id="network-status" class="text-xs font-bold text-gray-800 bg-yellow-300 border-2 border-black px-3 py-1 rounded-full">กำลังตรวจสอบการเชื่อมต่อ...</span>
     </div>
 
     <div class="flex-1 flex flex-col relative w-full max-w-5xl mx-auto p-4 md:p-6">
@@ -59,7 +59,10 @@
 
             <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
                 <h2 class="text-2xl font-black bg-yellow-300 px-6 py-3 comic-border">พนักงานในห้อง: <span id="host-player-count">0</span> คน</h2>
-                <button onclick="hostChangeState('playing')" class="bg-blue-500 hover:bg-blue-400 text-white text-2xl font-black px-12 py-4 comic-border comic-shadow btn-active w-full md:w-auto">เริ่มเกม! 🚀</button>
+                <div class="flex space-x-3 w-full md:w-auto">
+                    <button onclick="hostCancelRoom()" class="bg-red-500 hover:bg-red-400 text-white text-xl font-black px-6 py-4 comic-border comic-shadow btn-active">ยกเลิกสร้างห้อง ❌</button>
+                    <button onclick="hostChangeState('playing')" class="bg-blue-500 hover:bg-blue-400 text-white text-2xl font-black px-12 py-4 comic-border comic-shadow btn-active flex-1 md:flex-none">เริ่มเกม! 🚀</button>
+                </div>
             </div>
 
             <div id="host-players-grid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3 text-center font-bold text-lg">
@@ -112,16 +115,23 @@
                 <input type="number" id="player-pin" placeholder="PIN 6 หลัก" class="w-full text-center p-3 text-xl font-black border-4 border-black mb-4 uppercase">
                 <input type="text" id="player-id" placeholder="รหัสพนักงาน" class="w-full text-center p-3 text-xl font-black border-4 border-black mb-4">
                 <input type="text" id="player-name" placeholder="ชื่อเล่น" class="w-full text-center p-3 text-xl font-black border-4 border-black mb-6">
-                <button onclick="playerJoin()" class="w-full bg-green-400 text-black font-black text-xl py-4 comic-border comic-shadow btn-active">เข้าสู่ระบบ 🏃‍♂️</button>
+                
+                <div class="flex space-x-3">
+                    <button onclick="changeView('role')" class="bg-gray-400 text-white font-black text-lg px-4 py-4 comic-border comic-shadow btn-active">🔙</button>
+                    <button onclick="playerJoin()" class="flex-1 bg-green-400 text-black font-black text-xl py-4 comic-border comic-shadow btn-active">เข้าสู่ระบบ 🏃‍♂️</button>
+                </div>
             </div>
-            <button onclick="changeView('role')" class="mt-8 font-bold underline text-slate-600">ย้อนกลับหน้าหลัก</button>
         </div>
 
         <div id="view-player-waiting" class="hidden flex-1 flex flex-col items-center justify-center p-6 text-center">
             <div class="bg-purple-300 comic-border comic-shadow p-8 max-w-md w-full">
                 <h1 class="text-3xl font-black text-black mb-4 animate-pulse">รอผู้ทดสอบอื่น...</h1>
-                <p class="text-lg font-bold text-slate-800">เมื่อวิทยากร (GM) กดเริ่มเกม คำถามและตัวเลือกจะแสดงขึ้นที่หน้าจอนี้อัตโนมัติ</p>
-                <div class="mt-6 text-6xl">⏳</div>
+                <p class="text-lg font-bold text-slate-800 mb-6">เมื่อวิทยากร (GM) กดเริ่มเกม คำถามและตัวเลือกจะแสดงขึ้นที่หน้าจอนี้อัตโนมัติ</p>
+                
+                <button onclick="playerLeaveRoom()" class="w-full bg-red-500 hover:bg-red-400 text-white font-black text-lg py-3 comic-border comic-shadow btn-active mb-4">
+                    ออกจากห้องนี้ 🏃‍♂️💨
+                </button>
+                <div class="text-6xl">⏳</div>
             </div>
         </div>
 
@@ -172,10 +182,9 @@
         const sfxCorrect = new Audio('https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3'); 
         const sfxWrong = new Audio('https://assets.mixkit.co/active_storage/sfx/3112/3112-preview.mp3'); 
         
-        // 🔥 เพิ่มเสียงดนตรีประกอบตอนเล่นเกม (Background Music)
         const bgmGame = new Audio('https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3'); 
-        bgmGame.loop = true; // เล่นวนซ้ำ
-        bgmGame.volume = 0.3; // เปิดเสียงที่ 30% ให้เป็นบรรยากาศพื้นหลัง
+        bgmGame.loop = true; 
+        bgmGame.volume = 0.3;
 
         const firebaseConfig = {
             apiKey: "AIzaSyA-BNjTFR15PBWThOFyB10UcQR50jUvkTM",
@@ -236,11 +245,9 @@
                 const players = snap.val();
                 if(players) {
                     const newTotal = Object.keys(players).length;
-                    
                     if (newTotal > hostTotalPlayers && !isQuestionActive && currentQIdx === -1) {
                         sfxJoin.currentTime = 0; sfxJoin.play().catch(e => console.log('Audio error'));
                     }
-                    
                     hostTotalPlayers = newTotal;
                     document.getElementById('host-player-count').innerText = hostTotalPlayers;
                     
@@ -259,10 +266,26 @@
                         clearInterval(hostTimerObj); 
                         endQuestion(currentQIdx);    
                     }
+                } else {
+                    hostTotalPlayers = 0;
+                    document.getElementById('host-player-count').innerText = 0;
+                    document.getElementById('host-players-grid').innerHTML = '<div class="col-span-full text-slate-500 mt-4">รอผู้เข้าอบรมสแกนเข้าห้อง...</div>';
                 }
             });
 
             changeView('host-lobby');
+        }
+
+        // ฟังชันก์ยกเลิกห้องฝั่ง Host
+        function hostCancelRoom() {
+            if(confirm("คุณต้องการยกเลิกและปิดห้องทดสอบนี้ใช่หรือไม่?")) {
+                clearInterval(hostTimerObj);
+                bgmGame.pause();
+                if(currentRoom) {
+                    db.ref(`rooms/${currentRoom}`).remove(); // ลบข้อมูลห้องบน Firebase
+                }
+                location.reload(); // เคลียร์หน้าจอกลับจุดเริ่มต้น
+            }
         }
 
         function hostChangeState(newState) {
@@ -274,7 +297,7 @@
                 if (currentQIdx < questionsList.length) {
                     startQuestion(currentQIdx);
                 } else {
-                    bgmGame.pause(); // ปิดเสียงเมื่อจบเกม
+                    bgmGame.pause(); 
                     db.ref(`rooms/${currentRoom}`).update({ status: 'finished' });
                     document.getElementById('host-correct-ans-title').innerText = "🏁 จบการทดสอบ 🏁";
                     document.getElementById('btn-next-q').classList.add('hidden');
@@ -299,9 +322,8 @@
             db.ref(`rooms/${currentRoom}`).update({ status: 'playing', qIndex: idx, timer: 25 });
             changeView('host-game');
 
-            // 🔥 เปิดเพลง Background Music บนจอ Host
             bgmGame.currentTime = 0; 
-            bgmGame.play().catch(e => console.log('BGM Blocked by browser'));
+            bgmGame.play().catch(e => console.log('BGM Error'));
 
             globalTimer = 25;
             document.getElementById('host-timer').innerText = globalTimer;
@@ -325,7 +347,7 @@
 
         function endQuestion(idx) {
             isQuestionActive = false; 
-            bgmGame.pause(); // 🛑 ปิดเพลงเมื่อหมดเวลาหรือตอบครบ
+            bgmGame.pause(); 
 
             const correctText = questionsList[idx].o[questionsList[idx].ans];
             document.getElementById('host-correct-ans-title').innerHTML = `<span class="text-2xl mt-2 block text-black">คำตอบที่ถูกคือ: <br><span class="text-3xl md:text-4xl text-green-600 mt-2 block">${correctText}</span></span>`;
@@ -376,6 +398,7 @@
             currentRoom = pin;
             db.ref(`rooms/${currentRoom}`).once('value', snap => {
                 if(!snap.exists()) { alert("ไม่พบรหัสห้องนี้ กรุณาเช็กหน้าจอหลักอีกครั้งครับ"); return; }
+                if(snap.val().status !== 'lobby') { alert("ห้องทดสอบนี้เริ่มเล่นไปแล้ว ไม่สามารถเข้าร่วมย้อนหลังได้ครับ"); return; }
                 
                 const ref = db.ref(`rooms/${currentRoom}/players`).push();
                 playerKey = ref.key;
@@ -392,6 +415,17 @@
                         alert("⚠️ เซิร์ฟเวอร์ปฏิเสธการเข้าห้อง!\n" + error.message);
                     });
             });
+        }
+
+        // ฟังก์ชันออกจากห้องฝั่ง Player (กดก่อนเกมเริ่ม)
+        function playerLeaveRoom() {
+            if(confirm("คุณต้องการออกจากห้องรอการทดสอบนี้ใช่หรือไม่?")) {
+                if(currentRoom && playerKey) {
+                    db.ref(`rooms/${currentRoom}/players/${playerKey}`).remove(); // ลบรายชื่อบน Firebase
+                }
+                playerKey = "";
+                location.reload(); // พากลับหน้าแรก
+            }
         }
 
         function listenToGame() {
