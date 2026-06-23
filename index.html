@@ -218,7 +218,7 @@
                     <span class="text-3xl mr-3">⬜</span><span id="player-opt-3" class="text-sm md:text-md font-bold leading-tight">D</span>
                 </button>
 
-                <div id="player-wait-overlay" class="hidden absolute inset-0 bg-white/95 border-4 border-black flex flex-col items-center justify-center text-center p-4">
+                <div id="player-wait-overlay" class="hidden absolute inset-0 bg-white/90 border-4 border-black flex flex-col items-center justify-center text-center p-4">
                     <div class="text-5xl mb-2">🔒</div>
                     <h2 class="text-2xl font-black text-purple-700">ส่งคำตอบเรียบร้อย!</h2>
                     <p class="text-md font-bold text-gray-800 mt-2">รอสัญญาณการคำนวณคะแนนสักครู่ครับ...</p>
@@ -266,7 +266,6 @@
             alert("Firebase Error: ไม่สามารถเข้าถึงฐานข้อมูลกลางได้");
         }
 
-        // 📝 อัปเดตชุดข้อความโจทย์-ตัวเลือก และสลับเฉลย (ans) ให้ตรงตามพี่ระบุ 100%
         const questionsList = [
             { 
                 q: "1.ข้อใด ไม่ใช่ ขั้นตอน LOTO ที่ถูกต้อง?", 
@@ -561,15 +560,17 @@
                         }
                     });
                 } else if (room.status === 'finished') {
+                    // 🏁 อัปเดตหน้าสรุปเกณฑ์คะแนนสะสมสุทธิให้ดึงตรงจากคะแนนล่าสุดในระบบ
                     const bg = document.getElementById('view-player-result');
                     bg.className = "hidden flex-1 flex flex-col items-center justify-center p-6 text-black text-center bg-indigo-300 comic-border comic-shadow";
                     
                     document.getElementById('player-result-title').innerText = "🏁 จบการทดสอบ 🏁";
                     
+                    // ดึงคะแนนสะสมล่าสุดมาคำนวณเงื่อนไขผ่าน/ไม่ผ่านเกณฑ์
                     if(localScore >= 1500) {
                         document.getElementById('player-result-points').innerHTML = `<span class="text-3xl text-green-900 block font-black mb-1">🎉 คุณผ่านการทดสอบ!</span><span class="text-lg font-bold">ได้คะแนนรวมสุทธิ: ${localScore} คะแนน</span>`;
                     } else {
-                        document.getElementById('player-result-points').innerText = `คะแนนสุทธิรวมทุกข้อ: ${localScore} คะแนน`;
+                        document.getElementById('player-result-points').innerHTML = `<span class="text-3xl text-red-900 block font-black mb-1">❌ คุณยังไม่ผ่านเกณฑ์</span><span class="text-lg font-bold">ได้คะแนนรวมสุทธิ: ${localScore} คะแนน<br>(เกณฑ์ผ่านคือ 1,500 คะแนนขึ้นไป)</span>`;
                     }
 
                     db.ref(`rooms/${currentRoom}/players`).once('value', allSnap => {
@@ -625,7 +626,7 @@
                 lastEarned: earned
             });
 
-            document.getElementById('player-wait-overlay').classList.remove('hidden');
+            document.getElementById('player-wait-overlay').className = "absolute inset-0 bg-white/95 border-4 border-black flex flex-col items-center justify-center text-center p-4 z-20";
         }
 
         function showPlayerResult(isCorrect, points) {
