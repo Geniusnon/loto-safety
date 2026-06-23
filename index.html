@@ -105,57 +105,61 @@
         </div>
 
         <!-- ========================================== -->
-        <!-- VIEW 4: HOST ANSWER / STATS -->
+        <!-- VIEW 4: HOST ANSWER / STATS & LIVE LEADERBOARD -->
         <!-- ========================================== -->
         <div id="view-host-answer" class="hidden flex-1 flex flex-col items-center justify-center">
-            <div class="bg-white comic-border comic-shadow p-6 text-center w-full max-w-4xl mb-6">
-                <h1 class="text-2xl font-black text-red-600 mb-2">หมดเวลา!</h1>
-                <p class="text-lg font-bold text-slate-600">คำตอบที่ถูกต้องคือ</p>
-                <h2 id="host-correct-ans-title" class="text-2xl md:text-3xl font-black text-green-600 mt-1 p-3 bg-green-50 border-4 border-green-500 rounded-xl">...</h2>
+            <div class="bg-white comic-border comic-shadow p-4 text-center w-full max-w-4xl mb-4">
+                <h1 class="text-xl font-black text-red-600">หมดเวลา!</h1>
+                <h2 id="host-correct-ans-title" class="text-xl md:text-2xl font-black text-green-600 mt-1 p-2 bg-green-50 border-2 border-green-500 rounded-xl">...</h2>
             </div>
             
-            <div class="bg-white comic-border comic-shadow w-full max-w-3xl p-6 mb-6">
-                <h3 class="text-xl font-black text-center mb-4 text-black border-b-4 border-black pb-2">📊 สรุปจำนวนผู้ตอบแยกตามสีช้อยส์</h3>
-                <div class="space-y-3">
-                    <div class="flex items-center">
-                        <span class="w-12 text-2xl text-center">🔷</span>
-                        <div class="flex-1 bg-gray-200 h-8 comic-border overflow-hidden">
-                            <div id="bar-ans-0" class="color-lcb-darkblue h-full transition-all duration-500" style="width: 0%"></div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-4xl mb-4 flex-1">
+                <!-- 📊 ฝั่งซ้าย: กราฟสรุปช้อยส์คำตอบรายสี -->
+                <div class="bg-white comic-border comic-shadow p-4 flex flex-col justify-center">
+                    <h3 class="text-md font-black text-center mb-3 text-black border-b-2 border-black pb-1">📊 ยอดผู้ตอบแยกรายสี</h3>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex items-center">
+                            <span class="w-8 text-xl text-center">🔷</span>
+                            <div class="flex-1 bg-gray-200 h-6 comic-border overflow-hidden">
+                                <div id="bar-ans-0" class="color-lcb-darkblue h-full transition-all duration-500" style="width: 0%"></div>
+                            </div>
+                            <span id="count-ans-0" class="w-14 text-right font-black">0 คน</span>
                         </div>
-                        <span id="count-ans-0" class="w-20 text-right font-black text-lg">0 คน</span>
+                        <div class="flex items-center">
+                            <span class="w-8 text-xl text-center">💎</span>
+                            <div class="flex-1 bg-gray-200 h-6 comic-border overflow-hidden">
+                                <div id="bar-ans-1" class="color-lcb-lightblue h-full transition-all duration-500" style="width: 0%"></div>
+                            </div>
+                            <span id="count-ans-1" class="w-14 text-right font-black">0 คน</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="w-8 text-xl text-center">🔺</span>
+                            <div class="flex-1 bg-gray-200 h-6 comic-border overflow-hidden">
+                                <div id="bar-ans-2" class="color-lcb-red h-full transition-all duration-500" style="width: 0%"></div>
+                            </div>
+                            <span id="count-ans-2" class="w-14 text-right font-black">0 คน</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="w-8 text-xl text-center">⬜</span>
+                            <div class="flex-1 bg-gray-200 h-6 comic-border overflow-hidden">
+                                <div id="bar-ans-3" class="color-lcb-white h-full transition-all duration-500" style="width: 0%"></div>
+                            </div>
+                            <span id="count-ans-3" class="w-14 text-right font-black">0 คน</span>
+                        </div>
                     </div>
-                    <div class="flex items-center">
-                        <span class="w-12 text-2xl text-center">💎</span>
-                        <div class="flex-1 bg-gray-200 h-8 comic-border overflow-hidden">
-                            <div id="bar-ans-1" class="color-lcb-lightblue h-full transition-all duration-500" style="width: 0%"></div>
-                        </div>
-                        <span id="count-ans-1" class="w-20 text-right font-black text-lg">0 คน</span>
-                    </div>
-                    <div class="flex items-center">
-                        <span class="w-12 text-2xl text-center">🔺</span>
-                        <div class="flex-1 bg-gray-200 h-8 comic-border overflow-hidden">
-                            <div id="bar-ans-2" class="color-lcb-red h-full transition-all duration-500" style="width: 0%"></div>
-                        </div>
-                        <span id="count-ans-2" class="w-20 text-right font-black text-lg">0 คน</span>
-                    </div>
-                    <div class="flex items-center">
-                        <span class="w-12 text-2xl text-center">⬜</span>
-                        <div class="flex-1 bg-gray-200 h-8 comic-border overflow-hidden">
-                            <div id="bar-ans-3" class="color-lcb-white h-full transition-all duration-500" style="width: 0%"></div>
-                        </div>
-                        <span id="count-ans-3" class="w-20 text-right font-black text-lg">0 คน</span>
+                </div>
+
+                <!-- 🏆 ฝั่งขวา: ตารางคะแนนผู้นำแบบอัปเดตเรียลไทม์รายข้อเพื่อความเร้าใจ -->
+                <div class="bg-orange-50 comic-border comic-shadow p-4 flex flex-col">
+                    <h3 id="leaderboard-title-text" class="text-md font-black text-center mb-3 text-orange-700 border-b-2 border-orange-300 pb-1">🔥 อันดับคะแนนผู้นำชั่วคราว 🔥</h3>
+                    <div id="leaderboard-container" class="space-y-2 flex-1 flex flex-col justify-center">
+                        <!-- รายชื่อผู้ทำคะแนนนำจะถูกยิงมาใส่ตรงนี้อัตโนมัติ -->
                     </div>
                 </div>
             </div>
-            
-            <div id="host-leaderboard" class="bg-orange-100 comic-border comic-shadow w-full max-w-3xl p-6 hidden mb-6">
-                <h2 class="text-2xl font-black text-center mb-4 text-orange-600">🏆 ทำเนียบตารางเกียรติยศและฉายาฮีโร่ 🏆</h2>
-                <div id="leaderboard-container" class="space-y-3"></div>
-            </div>
 
-            <div class="flex space-x-4 w-full max-w-3xl">
-                <button onclick="hostShowLeaderboard()" id="btn-show-rank" class="hidden flex-1 bg-yellow-400 text-black text-2xl font-black py-4 comic-border comic-shadow btn-active">ดูอันดับคะแนนสูงสุดสรุปเกม 🏆</button>
-                <button onclick="hostChangeState('next')" id="btn-next-q" class="flex-1 bg-blue-500 text-white text-2xl font-black py-4 comic-border comic-shadow btn-active">ข้อต่อไป ➡️</button>
+            <div class="w-full max-w-4xl">
+                <button onclick="hostChangeState('next')" id="btn-next-q" class="w-full bg-blue-500 text-white text-xl font-black py-3 comic-border comic-shadow btn-active">ข้อต่อไป ➡️</button>
             </div>
         </div>
 
@@ -201,7 +205,7 @@
             </div>
             
             <div class="bg-white border-4 border-black p-4 mb-4 shadow-sm text-center">
-                <h1 id="player-question-text" class="text-md md:text-xl font-black text-slate-800 leading-snug">โจทย์...</h1>
+                <h1 id="player-question-text" class="text-lg md:text-xl font-black text-slate-800 leading-snug">โจทย์...</h1>
             </div>
 
             <div class="grid grid-cols-1 gap-3 flex-1 pb-4 relative">
@@ -218,7 +222,7 @@
                     <span class="text-3xl mr-3">⬜</span><span id="player-opt-3" class="text-sm md:text-md font-bold leading-tight">D</span>
                 </button>
 
-                <div id="player-wait-overlay" class="hidden absolute inset-0 bg-white/90 border-4 border-black flex flex-col items-center justify-center text-center p-4">
+                <div id="player-wait-overlay" class="hidden absolute inset-0 bg-white/95 border-4 border-black flex flex-col items-center justify-center text-center p-4">
                     <div class="text-5xl mb-2">🔒</div>
                     <h2 class="text-2xl font-black text-purple-700">ส่งคำตอบเรียบร้อย!</h2>
                     <p class="text-md font-bold text-gray-800 mt-2">รอสัญญาณการคำนวณคะแนนสักครู่ครับ...</p>
@@ -373,6 +377,7 @@
                     startQuestion(currentQIdx);
                 } else {
                     db.ref(`rooms/${currentRoom}`).update({ status: 'finished' });
+                    alert("🏁 สิ้นสุดการทำแบบทดสอบความปลอดภัยครบทุกข้อแล้วครับพี่!");
                 }
             }
         }
@@ -386,10 +391,6 @@
             document.getElementById('host-opt-1').innerText = q.o[1];
             document.getElementById('host-opt-2').innerText = q.o[2];
             document.getElementById('host-opt-3').innerText = q.o[3];
-            
-            document.getElementById('host-leaderboard').classList.add('hidden');
-            document.getElementById('btn-show-rank').classList.add('hidden');
-            document.getElementById('btn-next-q').classList.remove('hidden');
 
             db.ref(`rooms/${currentRoom}`).update({ status: 'playing', qIndex: idx, timer: 40 });
             changeView('host-game');
@@ -418,8 +419,9 @@
             isQuestionActive = false; 
 
             const correctText = questionsList[idx].o[questionsList[idx].ans];
-            document.getElementById('host-correct-ans-title').innerHTML = `<span class="text-xl mt-1 block text-black">คำตอบที่ถูกคือ: <br><span class="text-2xl md:text-3xl text-green-600 mt-1 block font-black">${correctText}</span></span>`;
+            document.getElementById('host-correct-ans-title').innerHTML = `<span class="text-sm mt-0.5 block text-black">คำตอบที่ถูกคือ: <br><span class="text-lg md:text-xl text-green-600 block font-black leading-tight">${correctText}</span></span>`;
             
+            // 📊 1. คำนวณสถิติแยกตามสีช้อยส์ตัวเลือก
             db.ref(`rooms/${currentRoom}/players`).once('value', snap => {
                 const players = snap.val();
                 let counts = [0, 0, 0, 0];
@@ -439,45 +441,61 @@
                 }
             });
 
+            // 🏆 2. 🔥 เพิ่มระบบดึงรายชื่อผู้นำแบบเรียลไทม์แสดงผลทันทีทุกรอบข้อ!
+            hostRenderLiveLeaderboard(idx);
+
+            // เปลี่ยนข้อความปุ่มและเงื่อนไขเฉพาะข้อสุดท้าย
             if(idx === questionsList.length - 1) {
-                document.getElementById('btn-next-q').classList.add('hidden');
-                document.getElementById('btn-show-rank').classList.remove('hidden'); 
+                document.getElementById('btn-next-q').innerText = "จบการทดสอบสรุปคะแนนสุทธิ 🏁";
             } else {
-                document.getElementById('btn-next-q').classList.remove('hidden');
-                document.getElementById('btn-show-rank').classList.add('hidden');
+                document.getElementById('btn-next-q').innerText = "ข้อต่อไป ➡️";
             }
 
             db.ref(`rooms/${currentRoom}`).update({ status: 'answer' });
             changeView('host-answer');
         }
 
-        function hostShowLeaderboard() {
-            document.getElementById('btn-show-rank').classList.add('hidden');
-            document.getElementById('host-leaderboard').classList.remove('hidden');
+        // 🔥 ฟังก์ชันดึงประมวลผลคะแนนผู้นำขึ้นจอกลาง GM ทันทีรายข้อ
+        function hostRenderLiveLeaderboard(idx) {
+            const isFinalRound = (idx === questionsList.length - 1);
+            const titleElement = document.getElementById('leaderboard-title-text');
+            
+            if (isFinalRound) {
+                titleElement.innerText = "🏆 ตารางทำเนียบเกียรติยศสูงสุด (สรุปเกม) 🏆";
+            } else {
+                titleElement.innerText = `🔥 อันดับคะแนนผู้นำหลังจบ ข้อที่ ${idx + 1} 🔥`;
+            }
 
             db.ref(`rooms/${currentRoom}/players`).once('value', snap => {
                 const players = snap.val();
                 const container = document.getElementById('leaderboard-container');
                 container.innerHTML = '';
+                
                 if(players) {
                     const sorted = Object.values(players).sort((a,b) => b.score - a.score).slice(0,3);
-                    const medals = ['🥇 อันดับ 1', '🥈 อันดับ 2', '🥉 อันดับ 3'];
+                    const medals = ['🥇 1st', '🥈 2nd', '🥉 3rd'];
                     
-                    const titles = [
-                        'ปรมาจารย์ตัดแยกพลังงาน',
-                        'เซียนตัดแยกพลังงาน',
-                        'ผู้ชำนาญตัดแยกพลังงาน'
-                    ];
-                    
+                    // ปรับแต่งฉายาตามสเต็ปรอบข้อ
+                    let tags = ['🔥 กำลังนำดิ่ง!', '🏃‍♂️ ไล่บี้ติด ๆ!', '👀 จ่อท้ายมาแล้ว!'];
+                    if (isFinalRound) {
+                        tags = [
+                            '⚡ ปรมาจารย์ตัดแยกพลังงาน 👑',
+                            '⚡ เซียนตัดแยกพลังงาน 🛡️',
+                            '⚡ ผู้ชำนาญตัดแยกพลังงาน ⚙️'
+                        ];
+                    }
+
                     sorted.forEach((p, i) => {
-                        container.innerHTML += `<div class="bg-white border-4 border-black p-4 flex flex-col md:flex-row md:justify-between text-xl font-black comic-shadow gap-2">
-                            <div>
-                                <span class="text-purple-800">${medals[i]}: ${p.name} (${p.empId})</span>
-                                <div class="text-sm text-green-600 font-bold mt-1">${titles[i]}</div>
+                        container.innerHTML += `<div class="bg-white border-2 border-black p-2 flex flex-col justify-between text-md font-black comic-shadow rounded-md">
+                            <div class="flex justify-between items-center w-full">
+                                <span class="text-blue-900">${medals[i]}: ${p.name}</span>
+                                <span class="text-purple-700 text-sm">${p.score} pt</span>
                             </div>
-                            <span class="text-slate-900 text-right md:self-center">${p.score} คะแนน</span>
+                            <div class="text-xs ${isFinalRound ? 'text-green-600 font-extrabold' : 'text-slate-500 font-medium'} mt-0.5">${tags[i]}</div>
                         </div>`;
                     });
+                } else {
+                    container.innerHTML = '<div class="text-center text-slate-400 text-sm">ยังไม่มีข้อมูลผู้นำคะแนนค้างในระบบ</div>';
                 }
             });
         }
@@ -560,13 +578,11 @@
                         }
                     });
                 } else if (room.status === 'finished') {
-                    // 🏁 อัปเดตหน้าสรุปเกณฑ์คะแนนสะสมสุทธิให้ดึงตรงจากคะแนนล่าสุดในระบบ
                     const bg = document.getElementById('view-player-result');
                     bg.className = "hidden flex-1 flex flex-col items-center justify-center p-6 text-black text-center bg-indigo-300 comic-border comic-shadow";
                     
                     document.getElementById('player-result-title').innerText = "🏁 จบการทดสอบ 🏁";
                     
-                    // ดึงคะแนนสะสมล่าสุดมาคำนวณเงื่อนไขผ่าน/ไม่ผ่านเกณฑ์
                     if(localScore >= 1500) {
                         document.getElementById('player-result-points').innerHTML = `<span class="text-3xl text-green-900 block font-black mb-1">🎉 คุณผ่านการทดสอบ!</span><span class="text-lg font-bold">ได้คะแนนรวมสุทธิ: ${localScore} คะแนน</span>`;
                     } else {
